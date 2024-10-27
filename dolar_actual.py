@@ -36,19 +36,21 @@ raiz.config(bg=colorRaiz,padx=10,pady=10)
 raiz.resizable(0,0)
 
 
-
 # VARIABLES GLOBALES
-# caracter=StringVar()
 comentario=StringVar()
 
 resultado=0
 operacion=""
 reset_pantalla=False
+d=0
+
+#VARIABLE PARA EFECTO PARPADEO:
+
+flash_delay = 250  # msec between colour change
 
 
 #CONFIGURACION DEL MENU PRINCIPAL:
 barra_menu=Menu(raiz)
-# raiz["menu"]=barra_menu
 raiz.config(menu=barra_menu)
 
 #COMANDO PARA ELIMINAR LA LÍNEA DE LÁGRIMA DEL MENÚ:
@@ -72,8 +74,6 @@ def mensajeContacto():
 #Mensaje de versión info:
 def mensajeVersion():
     messagebox.showinfo("Info. Versión","Versión 1.0 \n \nMes/Año: 09/2024")
-
-
 
 
 '''GENERAMOS CARACTERISTICAS DE LA INTERFAZ QUE SE USARAN EN MULTIPLES PARTES'''
@@ -158,14 +158,11 @@ letraResultados= (fuenteGeneral, 9)
 # FONDOS
 fondoIngresos = "white"
 
-
 #AVISOS:
 F1 = "Debes insertar al menos 2 datos"
 F2 = "Faltan 1 campo por llenar"
 F3 = "Operación realizada"
 F4 = "Recuerda limpiar los campos antes de operar"
-
-
 
 
 '''CREACION DE VENTANA PRINCIPAL'''
@@ -226,11 +223,6 @@ headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 
 '''EFECTO PARPADEANTE AL ACTUALIZAR LOS VALORES DE LA PÁGINA DE ÁMBITO'''
 
-flash_delay = 250  # msec between colour change
-
-
-# letraBotones= (fuenteGeneral, 8, 'bold')
-# letraDatos= (fuenteGeneral, 9)
 
 def color_label():
     global colorGeneral, colorSeleccion, colorComentario, new_colour, letraDatos
@@ -250,7 +242,6 @@ def color_label():
 
     print(color_actual)
     print(fuente_actual)
-
 
 
 '''DECLARACIÓN DE VARIABLES'''
@@ -302,8 +293,6 @@ def extraccionDatosDolarOficial(url,usuario):
         Label_venta.after(flash_delay + i*flash_delay,color_label)
         
 
- 
-
 
 '''VERIFICAMOS SI LOS VALORES COICIDEN CON EL .json de la PÁGINA WEB'''
 # print(f'Valor de compra: '+str(valor_compra))
@@ -332,8 +321,6 @@ def calcularPesosARS(precioVenta,montoEnUSD):
         texto_resultado1.set("")
 
     else:
-        # montoEnUSD.replace('.',',').replace('','.')
-        # montoEnUSD.replace('.',',')
         resultado = precioVenta * float(montoEnUSD)
         texto_resultado1.set(("{:_.2f}".format(resultado)).replace(".",",").replace("_", "."))
     
@@ -421,20 +408,13 @@ Label_venta.grid(column=1,row=fila4,sticky=u1,padx=x1,pady=y1)
 Label(tipoCambio,textvariable=texto_variacion, fg=fuenteDatos,font=letraDatos).grid(column=2,row=fila4,sticky=u1,padx=x1,pady=y1)
 Label(tipoCambio,textvariable=texto_fecha, fg=fuenteDatos,font=letraDatos).grid(column=3,row=fila4,sticky=u1,padx=x1,pady=y1)
 
-# Label(tipoCambio,textvariable=texto_compra, fg=flash_colours[0],font=letraDatos).grid(column=0,row=fila4,sticky=u1,padx=x1,pady=y1)
-
-# Label_venta = Label(tipoCambio,textvariable=texto_venta, fg=flash_colours[0],font=letraDatos)
-# Label_venta.grid(column=1,row=fila4,sticky=u1,padx=x1,pady=y1)
-
-# Label(tipoCambio,textvariable=texto_variacion, fg=flash_colours[0],font=letraDatos).grid(column=2,row=fila4,sticky=u1,padx=x1,pady=y1)
-# Label(tipoCambio,textvariable=texto_fecha, fg=flash_colours[0],font=letraDatos).grid(column=3,row=fila4,sticky=u1,padx=x1,pady=y1)
 
 #********* FILA 5 *************************************************
 Label(tipoCambio,text="Ingrese el valor (en USD)", fg=fuenteSubtitulo,font=letraSubtitulos, relief=bordeSubtitulo,borderwidth=b1).grid(column=0,row=fila5,sticky=u1, columnspan=2,padx=x3,pady=y3)
 Label(tipoCambio,text="Resultado (en $ ARS)", fg=fuenteSubtitulo,font=letraSubtitulos, relief=bordeSubtitulo,borderwidth=b1).grid(column=2,row=fila5,sticky=u1, columnspan=2,padx=x3,pady=y3)
 
 #********* FILA 6 *************************************************
-pantalla1=Entry(tipoCambio, textvariable=datoIngreso1, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso)
+pantalla1=Entry(tipoCambio, textvariable=datoIngreso1, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso, validate="all", validatecommand=(verificacionValores.register(validation0), "%S"))
 pantalla1.grid(column=0, row=fila6, sticky=u1, columnspan=2, padx=x2,pady=y2)
 
 pantalla2 =Entry(tipoCambio,textvariable=texto_resultado1,state="readonly", justify="center", fg=fuenteResultados,font=letraResultados, relief=bordeSubtitulo,borderwidth=b1)
@@ -447,7 +427,6 @@ botonCalcular.grid(row=fila7, column=0, columnspan=2,padx=x2,pady=y2) #,sticky=u
 
 botonLimpiar=Button(tipoCambio, text="LIMPIAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho2, height=alto1, command=lambda:limpiarCalculos())
 botonLimpiar.grid(row=fila7, column=2, columnspan=2,padx=x2,pady=y2) #,sticky=u1
-
 
 
 
@@ -493,11 +472,6 @@ Label(verificacionValores,textvariable=comentario, fg=colorComentario,font=letra
 '''FUNCIONES PARA SUMAR VARIOS VALORES DENTRO DEL CAMPO [PESOS ($)]
 ANTES DE REALIZAR LA CONVERSIÓN A [TC ($ / USD)] O A [DOLARES (USD)]'''
 
-#DECLARACIÓN DE VARIABLES GLOBALES:
-# resultado=0
-# operacion=""
-# reset_pantalla=False
-d=0
 
 # FUNCIÓN PARA INSERTAR DIGITOS EN LA PANTALLA
 def presionarBoton(digito):
@@ -784,19 +758,6 @@ pantalla4.bind("<BackSpace>", lambda _: borrar_ultimo())
 # = (Return/Intro)
 pantalla4.bind("<Return>", lambda _: subTotal())
 pantalla4.bind("<KP_Enter>", lambda _: subTotal())
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
