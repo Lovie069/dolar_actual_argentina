@@ -73,7 +73,8 @@ def mensajeContacto():
 
 #Mensaje de versión info:
 def mensajeVersion():
-    messagebox.showinfo("Info. Versión","Versión 1.0 \n \nMes/Año: 09/2024")
+    # messagebox.showinfo("Info. Versión","Versión 1.0 \n \nMes/Año: 09/2024")
+    messagebox.showinfo("Info. Versión","Versión 1.1 \n \nMes/Año: 10/2024")
 
 
 '''GENERAMOS CARACTERISTICAS DE LA INTERFAZ QUE SE USARAN EN MULTIPLES PARTES'''
