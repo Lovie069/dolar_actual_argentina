@@ -6,6 +6,7 @@ https://stackoverflow.com/questions/38489386/how-to-fix-403-forbidden-errors-whe
 import pandas as pd
 import requests
 # import json
+import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -140,6 +141,8 @@ fuenteDatos = colorGeneral
 fuenteIngreso = colorGeneral
 fuenteResultados = colorGeneral
 
+new_colour = colorGeneral
+
 #FUENTES:
 # fuenteGeneral = 'Tahoma'
 fuenteGeneral = 'Comic Sans MS'
@@ -148,6 +151,7 @@ letraTitulo = (fuenteGeneral, 11, 'bold')
 letraSubtitulos= (fuenteGeneral, 10, 'bold')
 letraBotones= (fuenteGeneral, 8, 'bold')
 letraDatos= (fuenteGeneral, 9)
+letraDatos2= (fuenteGeneral, 7, 'bold')
 letraIngresos= (fuenteGeneral, 9)
 letraResultados= (fuenteGeneral, 9)
 
@@ -187,6 +191,7 @@ s1 = ttk.Style()
 s1.configure("TNotebook.Tab", foreground=colorGeneral, font=('fuenteGeneral', '8', 'bold'))
 s1.map("TNotebook.Tab", foreground=[("active", colorSeleccion)])
 
+s2 = ttk.Style()
 
 '''CREACIÓN DE VENTANA TIPO NOTEBOOK'''
 #NOTEBOOK:
@@ -218,6 +223,38 @@ url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'}
 
 
+
+'''EFECTO PARPADEANTE AL ACTUALIZAR LOS VALORES DE LA PÁGINA DE ÁMBITO'''
+
+flash_delay = 250  # msec between colour change
+
+
+# letraBotones= (fuenteGeneral, 8, 'bold')
+# letraDatos= (fuenteGeneral, 9)
+
+def color_label():
+    global colorGeneral, colorSeleccion, colorComentario, new_colour, letraDatos
+
+    color_actual = Label_venta.cget('foreground')
+    fuente_actual = Label_venta.cget('font')
+
+    if color_actual == colorGeneral:
+        new_colour = colorSeleccion
+        fuente_actual = letraDatos2
+    else:
+        new_colour = colorGeneral
+        fuente_actual = letraDatos
+    
+    Label_venta.configure(foreground=new_colour, font=fuente_actual)
+    
+
+    print(color_actual)
+    print(fuente_actual)
+
+
+
+'''DECLARACIÓN DE VARIABLES'''
+
 texto_fecha = StringVar()
 texto_compra = StringVar()
 texto_venta = StringVar()
@@ -242,7 +279,7 @@ def extraccionDatosDolarOficial(url,usuario):
     '''EXTRACCIÓN DE LA INFORMACIÓN DE LA PÁGINA WEB'''
     response = requests.get(url, headers=usuario)
     valor = response.json()
-    print(response.json())
+    # print(response.json())
     # print(response.status_code)
 
     '''CREAMOS LAS VARIABLES QUE GUARDAN LOS VALORES DESEADOS'''
@@ -254,13 +291,19 @@ def extraccionDatosDolarOficial(url,usuario):
     
     # TEXTOS QUE REALMENTE SE MUESTRAN EN LA PANTALLA
     texto_fecha.set(str(valor_fecha))
-    texto_compra.set(str(valor_compra))
-    texto_venta.set(str(valor_venta))
+
+    texto_compra.set(("{:_.2f}".format(valor_compra)).replace(".",",").replace("_", "."))
+    texto_venta.set(("{:_.2f}".format(valor_venta)).replace(".",",").replace("_", "."))
+ 
     texto_variacion.set(str(valor_variacion))
 
 
-    # return valor, valor_fecha, valor_compra, valor_venta, valor_variacion
-    # return texto_fecha, texto_compra, texto_venta, texto_variacion
+    for i in range (0,4):
+        Label_venta.after(flash_delay + i*flash_delay,color_label)
+        
+
+ 
+
 
 '''VERIFICAMOS SI LOS VALORES COICIDEN CON EL .json de la PÁGINA WEB'''
 # print(f'Valor de compra: '+str(valor_compra))
@@ -369,11 +412,22 @@ Label(tipoCambio,text="FECHA (Últ. Act.)", fg=fuenteSubtitulo,font=letraSubtitu
 
 
 #********* FILA 4 *************************************************
+# background = flash_colours[0]
 Label(tipoCambio,textvariable=texto_compra, fg=fuenteDatos,font=letraDatos).grid(column=0,row=fila4,sticky=u1,padx=x1,pady=y1)
-Label(tipoCambio,textvariable=texto_venta, fg=fuenteDatos,font=letraDatos).grid(column=1,row=fila4,sticky=u1,padx=x1,pady=y1)
+
+Label_venta=Label(tipoCambio,textvariable=texto_venta, foreground=new_colour,font=letraDatos)
+Label_venta.grid(column=1,row=fila4,sticky=u1,padx=x1,pady=y1)
+
 Label(tipoCambio,textvariable=texto_variacion, fg=fuenteDatos,font=letraDatos).grid(column=2,row=fila4,sticky=u1,padx=x1,pady=y1)
 Label(tipoCambio,textvariable=texto_fecha, fg=fuenteDatos,font=letraDatos).grid(column=3,row=fila4,sticky=u1,padx=x1,pady=y1)
 
+# Label(tipoCambio,textvariable=texto_compra, fg=flash_colours[0],font=letraDatos).grid(column=0,row=fila4,sticky=u1,padx=x1,pady=y1)
+
+# Label_venta = Label(tipoCambio,textvariable=texto_venta, fg=flash_colours[0],font=letraDatos)
+# Label_venta.grid(column=1,row=fila4,sticky=u1,padx=x1,pady=y1)
+
+# Label(tipoCambio,textvariable=texto_variacion, fg=flash_colours[0],font=letraDatos).grid(column=2,row=fila4,sticky=u1,padx=x1,pady=y1)
+# Label(tipoCambio,textvariable=texto_fecha, fg=flash_colours[0],font=letraDatos).grid(column=3,row=fila4,sticky=u1,padx=x1,pady=y1)
 
 #********* FILA 5 *************************************************
 Label(tipoCambio,text="Ingrese el valor (en USD)", fg=fuenteSubtitulo,font=letraSubtitulos, relief=bordeSubtitulo,borderwidth=b1).grid(column=0,row=fila5,sticky=u1, columnspan=2,padx=x3,pady=y3)
