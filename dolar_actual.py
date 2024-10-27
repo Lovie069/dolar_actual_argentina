@@ -37,7 +37,7 @@ raiz.resizable(0,0)
 
 
 # VARIABLES GLOBALES
-caracter=StringVar()
+# caracter=StringVar()
 comentario=StringVar()
 
 resultado=0
@@ -242,7 +242,7 @@ def extraccionDatosDolarOficial(url,usuario):
     '''EXTRACCIÓN DE LA INFORMACIÓN DE LA PÁGINA WEB'''
     response = requests.get(url, headers=usuario)
     valor = response.json()
-    # print(response.json())
+    print(response.json())
     # print(response.status_code)
 
     '''CREAMOS LAS VARIABLES QUE GUARDAN LOS VALORES DESEADOS'''
@@ -252,7 +252,7 @@ def extraccionDatosDolarOficial(url,usuario):
     valor_venta = float(str(valor['venta']).replace('.','').replace(',','.'))
     valor_variacion = valor['variacion']
     
-    # TEXTOS
+    # TEXTOS QUE REALMENTE SE MUESTRAN EN LA PANTALLA
     texto_fecha.set(str(valor_fecha))
     texto_compra.set(str(valor_compra))
     texto_venta.set(str(valor_venta))
@@ -289,7 +289,8 @@ def calcularPesosARS(precioVenta,montoEnUSD):
         texto_resultado1.set("")
 
     else:
-        montoEnUSD.replace('.',',').replace('','.')
+        # montoEnUSD.replace('.',',').replace('','.')
+        # montoEnUSD.replace('.',',')
         resultado = precioVenta * float(montoEnUSD)
         texto_resultado1.set(("{:_.2f}".format(resultado)).replace(".",",").replace("_", "."))
     
@@ -299,6 +300,8 @@ def limpiarCalculos():
     texto_resultado1.set("")
 
 def limpiarCalculos2():
+    global resultado
+
     datoIngreso2.set("")
     datoIngreso3.set("")
     datoIngreso4.set("")
@@ -307,6 +310,23 @@ def limpiarCalculos2():
     texto_resultado3.set("")
     texto_resultado4.set("")
     comentario.set("")
+
+    resultado = 0
+
+
+def validation0(digito):
+    lista = ["+","-","*","/"]
+    
+    return not digito in lista
+
+
+def validation(digito):
+    lista = ["+","-","*","/"]
+    for n in range(0, 10):
+        lista.append(str(n))
+
+    return not digito in lista
+    
 
 
 ############################################################
@@ -387,18 +407,18 @@ Label(verificacionValores,text="", fg=fuenteSubtitulo,font=letraSubtitulos, reli
 
 #********* TEXTOS = FILA 3 ***************************************
 Label(verificacionValores,text="TC ($ / USD)", fg=fuenteSubtitulo,font=letraSubtitulos, relief=bordeSubtitulo,borderwidth=b1, width=25).grid(column=0,row=fila3,sticky=u1,padx=x1,pady=y1)
-pantalla3=Entry(verificacionValores, textvariable=datoIngreso2, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso, width=23)
+pantalla3=Entry(verificacionValores, textvariable=datoIngreso2, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso, width=23, validate="all", validatecommand=(verificacionValores.register(validation0), "%S"))
 pantalla3.grid(column=1,row=fila3,sticky=u1,padx=x1,pady=y1)
 
 
 #********* FILA 4 *************************************************
 Label(verificacionValores,text="PESOS ($)", fg=fuenteSubtitulo,font=letraSubtitulos, relief=bordeSubtitulo,borderwidth=b1).grid(column=0,row=fila4,sticky=u1,padx=x1,pady=y1)
-pantalla4=Entry(verificacionValores, textvariable=datoIngreso3, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso)
+pantalla4=Entry(verificacionValores, textvariable=datoIngreso3, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso, validate="all", validatecommand=(verificacionValores.register(validation), "%S"))
 pantalla4.grid(column=1,row=fila4,sticky=u1,padx=x1,pady=y1)
 
 #********* FILA 5 *************************************************
 Label(verificacionValores,text="DOLARES (USD)", fg=fuenteSubtitulo,font=letraSubtitulos, relief=bordeSubtitulo,borderwidth=b1).grid(column=0,row=fila5,sticky=u1,padx=x1,pady=y1)
-pantalla5=Entry(verificacionValores, textvariable=datoIngreso4, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso)
+pantalla5=Entry(verificacionValores, textvariable=datoIngreso4, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso, validate="all", validatecommand=(verificacionValores.register(validation0), "%S"))
 pantalla5.grid(column=1,row=fila5,sticky=u1,padx=x1,pady=y1)
 
 
@@ -415,4 +435,323 @@ Label(verificacionValores,textvariable=comentario, fg=colorComentario,font=letra
 
 
 
+
+'''FUNCIONES PARA SUMAR VARIOS VALORES DENTRO DEL CAMPO [PESOS ($)]
+ANTES DE REALIZAR LA CONVERSIÓN A [TC ($ / USD)] O A [DOLARES (USD)]'''
+
+#DECLARACIÓN DE VARIABLES GLOBALES:
+# resultado=0
+# operacion=""
+# reset_pantalla=False
+d=0
+
+# FUNCIÓN PARA INSERTAR DIGITOS EN LA PANTALLA
+def presionarBoton(digito):
+
+    global operacion, resultado, reset_pantalla, d
+
+    if reset_pantalla==True:
+        if datoIngreso3.get()!="INF" or datoIngreso3.get()!="COMPLEJO":
+            resultado= resultado
+            operacion=operacion            
+            
+        elif datoIngreso3.get()=="INF" or datoIngreso3.get()=="COMPLEJO":
+            resultado= 0
+            operacion=""
+
+        datoIngreso3.set(digito)
+        reset_pantalla=False        
+
+    elif reset_pantalla==False:
+
+        if d==0:
+
+            if digito==".":
+                datoIngreso3.set(datoIngreso3.get() + digito)
+
+                d+=1
+
+            elif digito!=".":
+                datoIngreso3.set(datoIngreso3.get() + digito)
+
+        else:
+            if digito==".":
+                datoIngreso3.set(datoIngreso3.get())
+
+            elif digito!=".":
+                datoIngreso3.set(datoIngreso3.get() + digito)
+    
+    pantalla4.icursor(END)
+
+      
+    print(resultado)
+    print(operacion)
+    print(reset_pantalla)
+
+
+
+# FUNCIÓN SUMAR:
+    
+def suma():
+
+    global operacion, resultado, reset_pantalla, d
+
+    d=0
+
+    if reset_pantalla==False and datoIngreso3.get()!="":
+
+        if operacion=="sumar":
+            resultado=resultado + float(datoIngreso3.get())
+        
+        elif operacion=="restar":
+            resultado= resultado - float(datoIngreso3.get())
+
+        elif operacion=="multiplicar":
+            resultado= resultado * float(datoIngreso3.get())
+        
+        elif operacion=="":
+            resultado= float(datoIngreso3.get())
+
+        elif operacion=="dividir":
+            try:
+                resultado= resultado / float(datoIngreso3.get())
+        
+            except ZeroDivisionError:
+                resultado="INF"
+
+#RESULTA:
+        operacion="sumar"
+        reset_pantalla=True
+        datoIngreso3.set(resultado)
+
+    elif reset_pantalla==False and datoIngreso3.get()=="":
+        resultado=resultado
+        operacion="sumar"
+        reset_pantalla=True
+        datoIngreso3.set(resultado)
+        
+#SI NO:
+    elif reset_pantalla==True:
+        if datoIngreso3.get()!="INF" or datoIngreso3.get()!="COMPLEJO":
+            resultado= float(datoIngreso3.get())
+            operacion="sumar"
+            reset_pantalla=True
+            datoIngreso3.set(resultado)
+
+        elif datoIngreso3.get()=="INF" or datoIngreso3.get()=="COMPLEJO":
+            resultado= 0
+            operacion=""
+            reset_pantalla=False
+            datoIngreso3.set("")
+
+    pantalla4.icursor(END)
+
+    print(resultado)
+    print(operacion)
+    print(reset_pantalla)
+    
+  
+# FUNCIÓN RESTAR:
+    
+def resta():
+
+    global operacion, resultado, reset_pantalla, d
+
+    d=0
+
+    if reset_pantalla==False  and datoIngreso3.get()!="":
+
+        if operacion=="sumar":
+            resultado=resultado + float(datoIngreso3.get())
+        
+        elif operacion=="restar":
+            resultado= resultado - float(datoIngreso3.get())
+
+        elif operacion=="multiplicar":
+            resultado= resultado * float(datoIngreso3.get())
+        
+        elif operacion=="":
+            resultado= float(datoIngreso3.get())
+
+        elif operacion=="dividir":
+            try:
+                resultado= resultado / float(datoIngreso3.get())
+        
+            except ZeroDivisionError:
+                resultado="INF"
+
+#RESULTA:
+        operacion="restar"
+        reset_pantalla=True
+        datoIngreso3.set(resultado)
+
+    elif reset_pantalla==False and datoIngreso3.get()=="":
+        resultado=resultado
+        operacion="restar"
+        reset_pantalla=True
+        datoIngreso3.set(resultado)
+            
+#SI NO:
+    elif reset_pantalla==True:
+        if datoIngreso3.get()!="INF" or datoIngreso3.get()!="COMPLEJO":
+            resultado= float(datoIngreso3.get())
+            operacion="restar"
+            reset_pantalla=True
+            datoIngreso3.set(resultado)
+
+        elif datoIngreso3.get()=="INF" or datoIngreso3.get()=="COMPLEJO":
+            resultado= 0
+            operacion=""
+            reset_pantalla=False
+            datoIngreso3.set("")
+
+    pantalla4.icursor(END)
+
+    print(resultado)
+    print(operacion)
+    print(reset_pantalla)
+
+
+
+def subTotal():
+
+    global operacion, resultado, reset_pantalla, d
+
+    d=0
+
+    if reset_pantalla==False and datoIngreso3.get()!="":
+
+        if operacion=="sumar":
+            resultado= resultado + float(datoIngreso3.get())
+
+        elif operacion=="restar":
+            resultado= resultado - float(datoIngreso3.get())
+
+        elif operacion=="multiplicar":
+            resultado= resultado * float(datoIngreso3.get())
+           
+        elif operacion=="":
+            resultado= float(datoIngreso3.get())
+                  
+        elif operacion=="dividir":
+                try:
+                    resultado= resultado / float(datoIngreso3.get())
+            
+                except ZeroDivisionError:
+                    resultado= "INF"
+
+#RESULTA:       
+        reset_pantalla=True
+        datoIngreso3.set(resultado)
+
+    elif reset_pantalla==False and datoIngreso3.get()=="":
+        resultado=resultado
+        operacion=""
+        reset_pantalla=True
+        datoIngreso3.set(resultado)
+        
+
+#RESULTA (en True con todas las operaciones):
+
+    elif reset_pantalla==True:
+        if datoIngreso3.get()!="INF" or datoIngreso3.get()!="COMPLEJO":
+            resultado= float(datoIngreso3.get())
+            reset_pantalla=True
+            datoIngreso3.set(resultado)
+        
+        elif datoIngreso3.get()=="INF" or datoIngreso3.get()=="COMPLEJO":
+            resultado= 0
+            reset_pantalla=False
+            datoIngreso3.set("")
+
+    operacion=""
+
+    pantalla4.icursor(END)
+
+    print(resultado)
+    print(operacion)
+    print(reset_pantalla)
+
+
+
+
+
+#BORRAR ULTIMO DIGITO:
+    
+def borrar_ultimo():
+
+    global operacion, resultado, reset_pantalla, d
+
+    d=0
+
+    if datoIngreso3.get()!="":
+        datoIngreso3.set(datoIngreso3.get()[:-1])
+
+    else:
+        datoIngreso3.set("")
+    
+    pantalla4.icursor(END)
+
+
+
+
+#CÓDIGO PARA INGRESAR DATOS POR TECLADO:
+#widget.bind(evento, callback)
+
+# Numeros
+for n in range(0, 10):
+    pantalla4.bind(str(n), lambda event: presionarBoton(event.char))
+    # pantalla4.bind(f"<KP_{n}>", lambda event: presionarBoton(event.char))
+    
+
+# Punto decimal
+# pantalla4.bind(".", lambda event: presionarBoton(event.char))
+# pantalla4.bind("<KP_Decimal>", lambda event: presionarBoton(event.char))
+
+# Operadores
+# raiz.bind("*", lambda _: multiplica())
+# raiz.bind("<KP_Multiply>", lambda _:  multiplica())
+# raiz.bind("/", lambda _: divide())
+# raiz.bind("<KP_Divide>", lambda _: divide())
+pantalla4.bind("+", lambda _: suma())
+# pantalla4.bind("<KP_Add>", lambda _: suma())
+pantalla4.bind("-", lambda _: resta())
+# pantalla4.bind("<KP_Subtract>", lambda _: resta())
+
+
+# Clear (SUPR)
+# raiz.bind("<Delete>", lambda _: borrar_todo())
+
+
+# Delete (BackSpace)
+pantalla4.bind("<BackSpace>", lambda _: borrar_ultimo())
+
+
+# = (Return/Intro)
+pantalla4.bind("<Return>", lambda _: subTotal())
+pantalla4.bind("<KP_Enter>", lambda _: subTotal())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 raiz.mainloop()
+
+
+
+'''Adding validation to an Entry widget
+https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/entry-validation.html'''
+
+'''Python String Methods
+https://www.w3schools.com/python/python_ref_string.asp'''
