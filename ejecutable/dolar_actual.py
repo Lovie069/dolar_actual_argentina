@@ -1,16 +1,20 @@
+'''Como OBTENER el VALOR del DOLAR BLUE con PYTHON
+https://www.youtube.com/watch?v=dPnZaWYqiIM'''
+
 '''PAGINA PARA CORREGIR EL ERROR DE IMPORTACIÓN DE DATOS DE AMBITO
 https://stackoverflow.com/questions/38489386/how-to-fix-403-forbidden-errors-when-calling-apis-using-python-requests'''
 
 
 '''IMPORTACIÓN DE LIBRERIAS'''
-import pandas as pd
 import requests
+import pandas as pd
+import numpy as np
 # import json
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import os
+# import os
 from funciones_TC  import *
 
 
@@ -198,9 +202,11 @@ notebook1.grid(column=0,row=0,sticky='nsew')
 
 tipoCambio = ttk.Frame(notebook1,padding=(1,1)) #PRIMERA PÁGINA
 verificacionValores = ttk.Frame(notebook1,padding=(1,1)) #SEGUNDA PÁGINA
+dolarHistorico = ttk.Frame(notebook1,padding=(1,1)) #TERCERA PÁGINA
 
 notebook1.add(tipoCambio, text='TC')
 notebook1.add(verificacionValores, text='Verificación')
+notebook1.add(dolarHistorico, text='Histórico')
 
 
 
@@ -217,14 +223,46 @@ url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
 # https://mercados.ambito.com//dolar/mayorista/variacion
 # https://mercados.ambito.com//dolarfuturo/variacion
 
+'''URL DE LAS COTIZACIONES HISTORICAS DE DOLAR OFICIAL EN ARGENTINA (ÚLTIMO MES)'''
+url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/2024-10-09/2024-11-09"
+
 '''PERMISOS DE LA PÁGINA WEB AMBITO'''
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'}
 
 
 
+'''DECLARACIÓN DE VARIABLES'''
+df = pd.DataFrame()
+
+'''PANTALLA 1'''
+datoIngreso1 = StringVar()
+
+'''PANTALLA 2'''
+datoIngreso2 = StringVar()
+datoIngreso3 = StringVar()
+datoIngreso4 = StringVar()
+
+
+texto_fecha = StringVar()
+texto_compra = StringVar()
+texto_venta = StringVar()
+texto_variacion = StringVar()
+
+texto_resultado1 = StringVar()
+
+texto_resultado2 = StringVar()
+texto_resultado3 = StringVar()
+texto_resultado4 = StringVar()
+
+texto_resultado5 = StringVar()
+
+valor_fecha = ""
+valor_compra = 0
+valor_venta = 0
+valor_variacion = ""
+
+
 '''EFECTO PARPADEANTE AL ACTUALIZAR LOS VALORES DE LA PÁGINA DE ÁMBITO'''
-
-
 def color_label():
     global colorGeneral, colorSeleccion, colorComentario, new_colour, letraDatos
 
@@ -239,34 +277,12 @@ def color_label():
         fuente_actual = letraDatos
     
     Label_venta.configure(foreground=new_colour, font=fuente_actual)
-    
-
-    print(color_actual)
-    print(fuente_actual)
-
-
-'''DECLARACIÓN DE VARIABLES'''
-
-texto_fecha = StringVar()
-texto_compra = StringVar()
-texto_venta = StringVar()
-texto_variacion = StringVar()
-
-texto_resultado1 = StringVar()
-
-texto_resultado2 = StringVar()
-texto_resultado3 = StringVar()
-texto_resultado4 = StringVar()
-
-valor_fecha = ""
-valor_compra = 0
-valor_venta = 0
-valor_variacion = ""
+    # print(color_actual)
+    # print(fuente_actual)
 
 
 def extraccionDatosDolarOficial(url,usuario):
     global valor_venta, valor_compra, valor_fecha, valor_variacion
-
 
     '''EXTRACCIÓN DE LA INFORMACIÓN DE LA PÁGINA WEB'''
     response = requests.get(url, headers=usuario)
@@ -306,13 +322,19 @@ def extraccionDatosDolarOficial(url,usuario):
 # valor_en_usd = valor_venta * float(monto_en_pesos)
 # print(f'Debes cobrar: '+str(valor_en_usd)+f' $')
 
-'''PANTALLA 1'''
-datoIngreso1 = StringVar()
 
-'''PANTALLA 2'''
-datoIngreso2 = StringVar()
-datoIngreso3 = StringVar()
-datoIngreso4 = StringVar()
+def extraccionDatosDolarOficialHistorico(url,usuario):
+
+    '''EXTRACCIÓN DE LA INFORMACIÓN DE LA PÁGINA WEB'''
+    response = requests.get(url, headers=usuario)
+    valor = response.json()
+    # print(response.json())
+    # print(response.status_code)
+    datos = np.array(valor, dtype=object)
+    df = pd.DataFrame(data=datos[1:,1:], columns=datos[0,1:], index=datos[1:,0])
+    print(df.to_string())
+
+    return df
 
 
 def calcularPesosARS(precioVenta,montoEnUSD):
@@ -430,7 +452,6 @@ botonLimpiar=Button(tipoCambio, text="LIMPIAR", fg=fuenteBotones,font=letraBoton
 botonLimpiar.grid(row=fila7, column=2, columnspan=2,padx=x2,pady=y2) #,sticky=u1
 
 
-
 '''VENTANA VERIFICACIÓN'''
 #********* BOTÓN = FILA 1 ***************************************
 Label(verificacionValores,text="VERIFICACIÓN", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=2)
@@ -466,6 +487,35 @@ botonLimpiar2.grid(row=fila7, column=1,padx=x2) #sticky=u1
 
 #********* FILA 7 *************************************************
 Label(verificacionValores,textvariable=comentario, fg=colorComentario,font=letraSubtitulos, relief=bordeSubtitulo,borderwidth=b1, height = 1).grid(column=0, row=fila6, sticky=u1, columnspan=2, padx=x2,pady=y2)
+
+
+
+
+'''VENTANA DOLAR HISTÓRICO'''
+#********* BOTÓN = FILA 1 ***************************************
+Label(dolarHistorico,text="DOLAR HISTÓRICO", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).place(x=15, y=0,width=437, height=28)
+
+#********* PANTALLA = FILA 2 ***************************************
+botonActualizar=Button(dolarHistorico, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficialHistorico(url_oficial_historico,headers))
+# botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
+botonActualizar.place(x=15, y=33,width=437, height=28)
+
+#********* FILA 3*************************************************
+response = requests.get(url_oficial_historico, headers=headers)
+valor = response.json()
+# print(response.json())
+# print(response.status_code)
+datos = np.array(valor, dtype=object)
+df = pd.DataFrame(data=datos[1:,1:], columns=datos[0,1:], index=datos[1:,0])
+
+table = tk.Text(dolarHistorico)
+table.insert(tk.INSERT, df.to_string())
+table.config(width=50, height=30)
+table.place(x=100, y=75,width=230, height=130)
+
+scrollbar = ttk.Scrollbar(dolarHistorico,orient=tk.VERTICAL, command=table.yview)
+table.config(yscrollcommand=scrollbar.set)
+scrollbar.place(x=340, y=75, height=130)
 
 
 
