@@ -4,6 +4,15 @@ https://www.youtube.com/watch?v=dPnZaWYqiIM'''
 '''PAGINA PARA CORREGIR EL ERROR DE IMPORTACIÓN DE DATOS DE AMBITO
 https://stackoverflow.com/questions/38489386/how-to-fix-403-forbidden-errors-when-calling-apis-using-python-requests'''
 
+'''Agregar Data Frame en Tkinter
+https://es.stackoverflow.com/questions/340278/como-mostrar-un-dataframe-en-tkinter'''
+
+'''Adding validation to an Entry widget
+https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/entry-validation.html'''
+
+'''Python String Methods
+https://www.w3schools.com/python/python_ref_string.asp'''
+
 
 '''IMPORTACIÓN DE LIBRERIAS'''
 import requests
@@ -324,6 +333,7 @@ def extraccionDatosDolarOficial(url,usuario):
 
 
 def extraccionDatosDolarOficialHistorico(url,usuario):
+    global table
 
     '''EXTRACCIÓN DE LA INFORMACIÓN DE LA PÁGINA WEB'''
     response = requests.get(url, headers=usuario)
@@ -332,6 +342,9 @@ def extraccionDatosDolarOficialHistorico(url,usuario):
     # print(response.status_code)
     datos = np.array(valor, dtype=object)
     df = pd.DataFrame(data=datos[1:,1:], columns=datos[0,1:], index=datos[1:,0])
+    table.delete("1.0", "end")
+    table.insert(tk.INSERT, df.to_string())
+    
     print(df.to_string())
 
     return df
@@ -509,7 +522,7 @@ datos = np.array(valor, dtype=object)
 df = pd.DataFrame(data=datos[1:,1:], columns=datos[0,1:], index=datos[1:,0])
 
 table = tk.Text(dolarHistorico)
-table.insert(tk.INSERT, df.to_string())
+# table.insert(tk.INSERT, df.to_string())
 table.config(width=50, height=30)
 table.place(x=100, y=75,width=230, height=130)
 
@@ -772,6 +785,27 @@ def borrar_ultimo():
     pantalla4.icursor(END)
 
 
+widget = 0
+
+def focus(event):
+    global widget
+    widget = verificacionValores.focus_get() 
+    # print(widget, "has focus")
+    print(widget)
+
+# Here function focus() is binded with Mouse Button-1 
+# so every time you click mouse, it will call the 
+# focus method, defined above 
+# verificacionValores.bind_all("<Button-1>", lambda e: focus(e))
+# verificacionValores.bind_all("<Select>", lambda e: focus(e)) 
+
+
+# def handleReturn(event):
+#     test = verificacionValores.focus_get()
+#     print(test.get())
+
+
+# verificacionValores.bind("<Return>",handleReturn)
 
 
 #CÓDIGO PARA INGRESAR DATOS POR TECLADO:
@@ -782,6 +816,7 @@ for n in range(0, 10):
     pantalla4.bind(str(n), lambda event: presionarBoton(event.char))
     # pantalla4.bind(f"<KP_{n}>", lambda event: presionarBoton(event.char))
     
+    verificacionValores.bind_all(str(n),lambda e: focus(e))
 
 # Punto decimal
 # pantalla4.bind(".", lambda event: presionarBoton(event.char))
@@ -808,7 +843,7 @@ pantalla4.bind("<BackSpace>", lambda _: borrar_ultimo())
 
 # = (Return/Intro)
 pantalla4.bind("<Return>", lambda _: subTotal())
-pantalla4.bind("<KP_Enter>", lambda _: subTotal())
+# pantalla4.bind("<KP_Enter>", lambda _: subTotal())
 
 
 
@@ -816,8 +851,3 @@ raiz.mainloop()
 
 
 
-'''Adding validation to an Entry widget
-https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/entry-validation.html'''
-
-'''Python String Methods
-https://www.w3schools.com/python/python_ref_string.asp'''
