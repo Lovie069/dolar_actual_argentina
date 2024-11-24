@@ -1,14 +1,16 @@
 /build
 /dist
+/ejecutable
 
 # SOFTWARES DE REFERENCIA
 Calculadora-04.py
-
 software_01.py
 funciones_areas.py
 funciones_volumenes.py
 conversionUnidades.py
 funcionesEspecialesAV.py
 prueba.py
-calendario_prueba
-input_temporal
+calendario_prueba.py
+input_temporal.py
+tecladoGet.py
+dolar_actual.spec

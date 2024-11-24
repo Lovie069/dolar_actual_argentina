@@ -1,17 +1,34 @@
+'''Como OBTENER el VALOR del DOLAR BLUE con PYTHON
+https://www.youtube.com/watch?v=dPnZaWYqiIM'''
+
 '''PAGINA PARA CORREGIR EL ERROR DE IMPORTACIÓN DE DATOS DE AMBITO
 https://stackoverflow.com/questions/38489386/how-to-fix-403-forbidden-errors-when-calling-apis-using-python-requests'''
 
+'''Agregar Data Frame en Tkinter
+https://es.stackoverflow.com/questions/340278/como-mostrar-un-dataframe-en-tkinter'''
+
+'''Adding validation to an Entry widget
+https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/entry-validation.html'''
+
+'''Python String Methods
+https://www.w3schools.com/python/python_ref_string.asp'''
+
 
 '''IMPORTACIÓN DE LIBRERIAS'''
-import pandas as pd
 import requests
+import pandas as pd
+import numpy as np
 # import json
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import os
+# import os
 from funciones_TC  import *
+
+
+'''IMPORTACIÓN DE FUNCIONES PROPIAS'''
+from operaciones_math import *
 
 
 '''INCIAMOS LA INTERFAZ DE USUARIO'''
@@ -36,16 +53,10 @@ raiz.config(bg=colorRaiz,padx=10,pady=10)
 raiz.resizable(0,0)
 
 
-# VARIABLES GLOBALES
+'''VARIABLES GLOBALES'''
 comentario=StringVar()
 
-resultado=0
-operacion=""
-reset_pantalla=False
-d=0
-
-#VARIABLE PARA EFECTO PARPADEO:
-
+'''VARIABLE PARA EFECTO PARPADEO:'''
 flash_delay = 250  # msec between colour change
 
 
@@ -74,7 +85,7 @@ def mensajeContacto():
 #Mensaje de versión info:
 def mensajeVersion():
     # messagebox.showinfo("Info. Versión","Versión 1.0 \n \nMes/Año: 09/2024")
-    messagebox.showinfo("Info. Versión","Versión 1.1 \n \nMes/Año: 10/2024")
+    messagebox.showinfo("Info. Versión","Versión 1.2 \n \nMes/Año: 11/2024")
 
 
 '''GENERAMOS CARACTERISTICAS DE LA INTERFAZ QUE SE USARAN EN MULTIPLES PARTES'''
@@ -198,9 +209,11 @@ notebook1.grid(column=0,row=0,sticky='nsew')
 
 tipoCambio = ttk.Frame(notebook1,padding=(1,1)) #PRIMERA PÁGINA
 verificacionValores = ttk.Frame(notebook1,padding=(1,1)) #SEGUNDA PÁGINA
+dolarHistorico = ttk.Frame(notebook1,padding=(1,1)) #TERCERA PÁGINA
 
 notebook1.add(tipoCambio, text='TC')
 notebook1.add(verificacionValores, text='Verificación')
+notebook1.add(dolarHistorico, text='Histórico')
 
 
 
@@ -217,14 +230,51 @@ url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
 # https://mercados.ambito.com//dolar/mayorista/variacion
 # https://mercados.ambito.com//dolarfuturo/variacion
 
+'''URL DE LAS COTIZACIONES HISTORICAS DE DOLAR OFICIAL EN ARGENTINA (ÚLTIMO MES)'''
+# url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/2024-10-09/2024-11-09"
+url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/"
+# 2024-10-09/2024-11-09
+
 '''PERMISOS DE LA PÁGINA WEB AMBITO'''
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'}
 
 
 
+'''DECLARACIÓN DE VARIABLES'''
+df = pd.DataFrame()
+
+'''PANTALLA 1'''
+datoIngreso1 = StringVar()
+
+'''PANTALLA 2'''
+datoIngreso2 = StringVar()
+datoIngreso3 = StringVar()
+datoIngreso4 = StringVar()
+
+texto_fecha = StringVar()
+texto_compra = StringVar()
+texto_venta = StringVar()
+texto_variacion = StringVar()
+
+texto_resultado1 = StringVar()
+
+texto_resultado2 = StringVar()
+texto_resultado3 = StringVar()
+texto_resultado4 = StringVar()
+
+texto_resultado5 = StringVar()
+
+valor_fecha = ""
+valor_compra = 0
+valor_venta = 0
+valor_variacion = ""
+
+'''PANTALLA 3'''
+datoIngreso5 = StringVar()
+datoIngreso6 =StringVar()
+
+
 '''EFECTO PARPADEANTE AL ACTUALIZAR LOS VALORES DE LA PÁGINA DE ÁMBITO'''
-
-
 def color_label():
     global colorGeneral, colorSeleccion, colorComentario, new_colour, letraDatos
 
@@ -239,34 +289,12 @@ def color_label():
         fuente_actual = letraDatos
     
     Label_venta.configure(foreground=new_colour, font=fuente_actual)
-    
-
-    print(color_actual)
-    print(fuente_actual)
-
-
-'''DECLARACIÓN DE VARIABLES'''
-
-texto_fecha = StringVar()
-texto_compra = StringVar()
-texto_venta = StringVar()
-texto_variacion = StringVar()
-
-texto_resultado1 = StringVar()
-
-texto_resultado2 = StringVar()
-texto_resultado3 = StringVar()
-texto_resultado4 = StringVar()
-
-valor_fecha = ""
-valor_compra = 0
-valor_venta = 0
-valor_variacion = ""
+    # print(color_actual)
+    # print(fuente_actual)
 
 
 def extraccionDatosDolarOficial(url,usuario):
     global valor_venta, valor_compra, valor_fecha, valor_variacion
-
 
     '''EXTRACCIÓN DE LA INFORMACIÓN DE LA PÁGINA WEB'''
     response = requests.get(url, headers=usuario)
@@ -306,13 +334,29 @@ def extraccionDatosDolarOficial(url,usuario):
 # valor_en_usd = valor_venta * float(monto_en_pesos)
 # print(f'Debes cobrar: '+str(valor_en_usd)+f' $')
 
-'''PANTALLA 1'''
-datoIngreso1 = StringVar()
 
-'''PANTALLA 2'''
-datoIngreso2 = StringVar()
-datoIngreso3 = StringVar()
-datoIngreso4 = StringVar()
+def extraccionDatosDolarOficialHistorico(url,usuario):
+    global table
+
+# url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/"
+# 2024-10-09/2024-11-09
+
+    url_requerido = url + datoIngreso5.get() + "/" + datoIngreso6.get()
+
+
+    '''EXTRACCIÓN DE LA INFORMACIÓN DE LA PÁGINA WEB'''
+    response = requests.get(url_requerido, headers=usuario)
+    valor = response.json()
+    # print(response.json())
+    # print(response.status_code)
+    datos = np.array(valor, dtype=object)
+    df = pd.DataFrame(data=datos[1:,1:], columns=datos[0,1:], index=datos[1:,0])
+    table.delete("1.0", "end")
+    table.insert(tk.INSERT, df.to_string())
+    
+    print(df.to_string())
+
+    return df
 
 
 def calcularPesosARS(precioVenta,montoEnUSD):
@@ -344,6 +388,11 @@ def limpiarCalculos2():
 
     resultado = 0
 
+def limpiarCalculos3():
+    datoIngreso5.set("")
+    datoIngreso6.set("")
+    table.delete("1.0", "end")
+    
 
 def validation0(digito):
     lista = ["+","-","*","/"]
@@ -430,7 +479,6 @@ botonLimpiar=Button(tipoCambio, text="LIMPIAR", fg=fuenteBotones,font=letraBoton
 botonLimpiar.grid(row=fila7, column=2, columnspan=2,padx=x2,pady=y2) #,sticky=u1
 
 
-
 '''VENTANA VERIFICACIÓN'''
 #********* BOTÓN = FILA 1 ***************************************
 Label(verificacionValores,text="VERIFICACIÓN", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=2)
@@ -452,7 +500,7 @@ pantalla4.grid(column=1,row=fila4,sticky=u1,padx=x1,pady=y1)
 
 #********* FILA 5 *************************************************
 Label(verificacionValores,text="DOLARES (USD)", fg=fuenteSubtitulo,font=letraSubtitulos, relief=bordeSubtitulo,borderwidth=b1).grid(column=0,row=fila5,sticky=u1,padx=x1,pady=y1)
-pantalla5=Entry(verificacionValores, textvariable=datoIngreso4, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso, validate="all", validatecommand=(verificacionValores.register(validation0), "%S"))
+pantalla5=Entry(verificacionValores, textvariable=datoIngreso4, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso, validate="all", validatecommand=(verificacionValores.register(validation), "%S"))
 pantalla5.grid(column=1,row=fila5,sticky=u1,padx=x1,pady=y1)
 
 
@@ -468,297 +516,99 @@ botonLimpiar2.grid(row=fila7, column=1,padx=x2) #sticky=u1
 Label(verificacionValores,textvariable=comentario, fg=colorComentario,font=letraSubtitulos, relief=bordeSubtitulo,borderwidth=b1, height = 1).grid(column=0, row=fila6, sticky=u1, columnspan=2, padx=x2,pady=y2)
 
 
-
-
-'''FUNCIONES PARA SUMAR VARIOS VALORES DENTRO DEL CAMPO [PESOS ($)]
-ANTES DE REALIZAR LA CONVERSIÓN A [TC ($ / USD)] O A [DOLARES (USD)]'''
-
-
-# FUNCIÓN PARA INSERTAR DIGITOS EN LA PANTALLA
-def presionarBoton(digito):
-
-    global operacion, resultado, reset_pantalla, d
-
-    if reset_pantalla==True:
-        if datoIngreso3.get()!="INF" or datoIngreso3.get()!="COMPLEJO":
-            resultado= resultado
-            operacion=operacion            
-            
-        elif datoIngreso3.get()=="INF" or datoIngreso3.get()=="COMPLEJO":
-            resultado= 0
-            operacion=""
-
-        datoIngreso3.set(digito)
-        reset_pantalla=False        
-
-    elif reset_pantalla==False:
-
-        if d==0:
-
-            if digito==".":
-                datoIngreso3.set(datoIngreso3.get() + digito)
-
-                d+=1
-
-            elif digito!=".":
-                datoIngreso3.set(datoIngreso3.get() + digito)
-
-        else:
-            if digito==".":
-                datoIngreso3.set(datoIngreso3.get())
-
-            elif digito!=".":
-                datoIngreso3.set(datoIngreso3.get() + digito)
-    
-    pantalla4.icursor(END)
-
-      
-    print(resultado)
-    print(operacion)
-    print(reset_pantalla)
-
-
-
-# FUNCIÓN SUMAR:
-    
-def suma():
-
-    global operacion, resultado, reset_pantalla, d
-
-    d=0
-
-    if reset_pantalla==False and datoIngreso3.get()!="":
-
-        if operacion=="sumar":
-            resultado=resultado + float(datoIngreso3.get())
-        
-        elif operacion=="restar":
-            resultado= resultado - float(datoIngreso3.get())
-
-        elif operacion=="multiplicar":
-            resultado= resultado * float(datoIngreso3.get())
-        
-        elif operacion=="":
-            resultado= float(datoIngreso3.get())
-
-        elif operacion=="dividir":
-            try:
-                resultado= resultado / float(datoIngreso3.get())
-        
-            except ZeroDivisionError:
-                resultado="INF"
-
-#RESULTA:
-        operacion="sumar"
-        reset_pantalla=True
-        datoIngreso3.set(resultado)
-
-    elif reset_pantalla==False and datoIngreso3.get()=="":
-        resultado=resultado
-        operacion="sumar"
-        reset_pantalla=True
-        datoIngreso3.set(resultado)
-        
-#SI NO:
-    elif reset_pantalla==True:
-        if datoIngreso3.get()!="INF" or datoIngreso3.get()!="COMPLEJO":
-            resultado= float(datoIngreso3.get())
-            operacion="sumar"
-            reset_pantalla=True
-            datoIngreso3.set(resultado)
-
-        elif datoIngreso3.get()=="INF" or datoIngreso3.get()=="COMPLEJO":
-            resultado= 0
-            operacion=""
-            reset_pantalla=False
-            datoIngreso3.set("")
-
-    pantalla4.icursor(END)
-
-    print(resultado)
-    print(operacion)
-    print(reset_pantalla)
-    
-  
-# FUNCIÓN RESTAR:
-    
-def resta():
-
-    global operacion, resultado, reset_pantalla, d
-
-    d=0
-
-    if reset_pantalla==False  and datoIngreso3.get()!="":
-
-        if operacion=="sumar":
-            resultado=resultado + float(datoIngreso3.get())
-        
-        elif operacion=="restar":
-            resultado= resultado - float(datoIngreso3.get())
-
-        elif operacion=="multiplicar":
-            resultado= resultado * float(datoIngreso3.get())
-        
-        elif operacion=="":
-            resultado= float(datoIngreso3.get())
-
-        elif operacion=="dividir":
-            try:
-                resultado= resultado / float(datoIngreso3.get())
-        
-            except ZeroDivisionError:
-                resultado="INF"
-
-#RESULTA:
-        operacion="restar"
-        reset_pantalla=True
-        datoIngreso3.set(resultado)
-
-    elif reset_pantalla==False and datoIngreso3.get()=="":
-        resultado=resultado
-        operacion="restar"
-        reset_pantalla=True
-        datoIngreso3.set(resultado)
-            
-#SI NO:
-    elif reset_pantalla==True:
-        if datoIngreso3.get()!="INF" or datoIngreso3.get()!="COMPLEJO":
-            resultado= float(datoIngreso3.get())
-            operacion="restar"
-            reset_pantalla=True
-            datoIngreso3.set(resultado)
-
-        elif datoIngreso3.get()=="INF" or datoIngreso3.get()=="COMPLEJO":
-            resultado= 0
-            operacion=""
-            reset_pantalla=False
-            datoIngreso3.set("")
-
-    pantalla4.icursor(END)
-
-    print(resultado)
-    print(operacion)
-    print(reset_pantalla)
-
-
-
-def subTotal():
-
-    global operacion, resultado, reset_pantalla, d
-
-    d=0
-
-    if reset_pantalla==False and datoIngreso3.get()!="":
-
-        if operacion=="sumar":
-            resultado= resultado + float(datoIngreso3.get())
-
-        elif operacion=="restar":
-            resultado= resultado - float(datoIngreso3.get())
-
-        elif operacion=="multiplicar":
-            resultado= resultado * float(datoIngreso3.get())
-           
-        elif operacion=="":
-            resultado= float(datoIngreso3.get())
-                  
-        elif operacion=="dividir":
-                try:
-                    resultado= resultado / float(datoIngreso3.get())
-            
-                except ZeroDivisionError:
-                    resultado= "INF"
-
-#RESULTA:       
-        reset_pantalla=True
-        datoIngreso3.set(resultado)
-
-    elif reset_pantalla==False and datoIngreso3.get()=="":
-        resultado=resultado
-        operacion=""
-        reset_pantalla=True
-        datoIngreso3.set(resultado)
-        
-
-#RESULTA (en True con todas las operaciones):
-
-    elif reset_pantalla==True:
-        if datoIngreso3.get()!="INF" or datoIngreso3.get()!="COMPLEJO":
-            resultado= float(datoIngreso3.get())
-            reset_pantalla=True
-            datoIngreso3.set(resultado)
-        
-        elif datoIngreso3.get()=="INF" or datoIngreso3.get()=="COMPLEJO":
-            resultado= 0
-            reset_pantalla=False
-            datoIngreso3.set("")
-
-    operacion=""
-
-    pantalla4.icursor(END)
-
-    print(resultado)
-    print(operacion)
-    print(reset_pantalla)
-
-
-
-
-
-#BORRAR ULTIMO DIGITO:
-    
-def borrar_ultimo():
-
-    global operacion, resultado, reset_pantalla, d
-
-    d=0
-
-    if datoIngreso3.get()!="":
-        datoIngreso3.set(datoIngreso3.get()[:-1])
-
-    else:
-        datoIngreso3.set("")
-    
-    pantalla4.icursor(END)
-
-
-
-
-#CÓDIGO PARA INGRESAR DATOS POR TECLADO:
+# def on_entry_click(event):
+#     """function that gets called whenever entry is clicked"""
+#     if entryFechaInicial.get() == 'aaaa-mm-dd':
+#        entryFechaInicial.delete(0, "end") # delete all the text in the entry
+#        entryFechaInicial.insert(0, '') #Insert blank for user input
+
+
+
+'''VENTANA DOLAR HISTÓRICO'''
+#********* BOTÓN = FILA 1 ***************************************
+Label(dolarHistorico,text="DOLAR HISTÓRICO", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).place(x=15, y=0,width=437, height=28)
+
+#********* PANTALLA = FILA 2 ***************************************
+'''MOSTRAR UN VALOR GRIS TEMPORAL POR DEFECTO EN EL ENTRY
+https://stackoverflow.com/questions/30491721/how-to-insert-a-temporary-text-in-a-tkinter-entry-widget/39677021#39677021'''
+entryFechaInicial = Entry(dolarHistorico, textvariable=datoIngreso5, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso)
+# entryFechaInicial.insert(END, '2024-10-19')
+entryFechaInicial.insert(0, 'AAAA-MM-DD')
+entryFechaInicial.bind("<FocusIn>", lambda event: entryFechaInicial.delete(0,"end") if datoIngreso5.get() == "AAAA-MM-DD" else None)
+entryFechaInicial.bind("<FocusOut>", lambda event: entryFechaInicial.insert(0, "AAAA-MM-DD") if datoIngreso5.get() == "" else None)
+entryFechaInicial.place(x=100, y=33,width=100, height=28)
+# entryFechaInicial.configure(show="aaaa-mm-dd")
+
+entryFechaFinal = Entry(dolarHistorico, textvariable=datoIngreso6, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso)
+entryFechaFinal.insert(0, 'AAAA-MM-DD')
+entryFechaFinal.bind("<FocusIn>", lambda event: entryFechaFinal.delete(0,"end") if datoIngreso6.get() == "AAAA-MM-DD" else None)
+entryFechaFinal.bind("<FocusOut>", lambda event: entryFechaFinal.insert(0, "AAAA-MM-DD") if datoIngreso6.get() == "" else None)
+entryFechaFinal.place(x=230, y=33,width=100, height=28)
+
+botonActualizar=Button(dolarHistorico, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficialHistorico(url_oficial_historico,headers))
+# botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
+botonActualizar.place(x=360, y=33,width=100, height=28)
+
+botonLimpiar3=Button(dolarHistorico, text="LIMPIAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:limpiarCalculos3())
+# botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
+botonLimpiar3.place(x=360, y=80,width=100, height=28)
+
+#********* FILA 3*************************************************
+table = tk.Text(dolarHistorico)
+table.config(width=50, height=30)
+table.place(x=100, y=75,width=230, height=130)
+
+scrollbar = ttk.Scrollbar(dolarHistorico,orient=tk.VERTICAL, command=table.yview)
+table.config(yscrollcommand=scrollbar.set)
+scrollbar.place(x=340, y=75, height=130)
+
+
+
+'''CÓDIGO PARA INGRESAR DATOS POR TECLADO:'''
 #widget.bind(evento, callback)
 
 # Numeros
 for n in range(0, 10):
-    pantalla4.bind(str(n), lambda event: presionarBoton(event.char))
-    # pantalla4.bind(f"<KP_{n}>", lambda event: presionarBoton(event.char))
-    
+    pantalla4.bind(str(n), lambda event: presionarBoton(event.char,datoIngreso3, pantalla4, END))
+    pantalla5.bind(str(n), lambda event: presionarBoton(event.char,datoIngreso4, pantalla5, END))
+    # verificacionValores.bind_all(str(n),lambda e: focus(e))
 
-# Punto decimal
+'''Punto decimal'''
 # pantalla4.bind(".", lambda event: presionarBoton(event.char))
 # pantalla4.bind("<KP_Decimal>", lambda event: presionarBoton(event.char))
 
-# Operadores
+'''Operadores'''
 # raiz.bind("*", lambda _: multiplica())
 # raiz.bind("<KP_Multiply>", lambda _:  multiplica())
+
 # raiz.bind("/", lambda _: divide())
 # raiz.bind("<KP_Divide>", lambda _: divide())
-pantalla4.bind("+", lambda _: suma())
+
+# pantalla4.bind("+", lambda _: suma())
 # pantalla4.bind("<KP_Add>", lambda _: suma())
-pantalla4.bind("-", lambda _: resta())
+
+# pantalla4.bind("-", lambda _: resta())
 # pantalla4.bind("<KP_Subtract>", lambda _: resta())
 
+pantalla4.bind("+", lambda _: suma(datoIngreso3, pantalla4, END))
+pantalla4.bind("-", lambda _: resta(datoIngreso3, pantalla4, END))
+pantalla5.bind("+", lambda _: suma(datoIngreso4, pantalla5, END))
+pantalla5.bind("-", lambda _: resta(datoIngreso4, pantalla5, END))
 
-# Clear (SUPR)
+
+'''Clear (SUPR)'''
 # raiz.bind("<Delete>", lambda _: borrar_todo())
 
-
 # Delete (BackSpace)
-pantalla4.bind("<BackSpace>", lambda _: borrar_ultimo())
+pantalla4.bind("<BackSpace>", lambda _: borrar_ultimo(datoIngreso3, pantalla4, END))
+pantalla5.bind("<BackSpace>", lambda _: borrar_ultimo(datoIngreso4, pantalla5, END))
 
 
-# = (Return/Intro)
-pantalla4.bind("<Return>", lambda _: subTotal())
-pantalla4.bind("<KP_Enter>", lambda _: subTotal())
+'''= (Return/Intro)'''
+# pantalla4.bind("<KP_Enter>", lambda _: subTotal())
+
+pantalla4.bind("<Return>", lambda _: subTotal(datoIngreso3, pantalla4, END))
+pantalla5.bind("<Return>", lambda _: subTotal(datoIngreso4, pantalla5, END))
 
 
 
@@ -766,8 +616,3 @@ raiz.mainloop()
 
 
 
-'''Adding validation to an Entry widget
-https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/entry-validation.html'''
-
-'''Python String Methods
-https://www.w3schools.com/python/python_ref_string.asp'''
