@@ -1,14 +1,12 @@
-# VARIABLES GLOBALES
-# comentario=StringVar()
-
+'''VARIABLES GLOBALES'''
 resultado=0
 operacion=""
 reset_pantalla=False
 d=0
 
 
-'''FUNCIONES PARA SUMAR VARIOS VALORES DENTRO DEL CAMPO [PESOS ($)]
-ANTES DE REALIZAR LA CONVERSIÓN A [TC ($ / USD)] O A [DOLARES (USD)]'''
+'''FUNCIONES PARA SUMAR (O RESTAR) VARIOS VALORES DENTRO DEL CAMPO [PESOS ($)] Y [DOLARES (USD)]
+ANTES DE REALIZAR LA CONVERSIÓN A [TC ($ / USD)], A [DOLARES (USD)] O A [PESOS ($)]'''
 
 
 # FUNCIÓN PARA INSERTAR DIGITOS EN LA PANTALLA
@@ -57,7 +55,6 @@ def presionarBoton(digito, datoIngreso, pantalla, END):
 
 
 # FUNCIÓN SUMAR:
-    
 def suma(datoIngreso, pantalla, END):
 
     global operacion, resultado, reset_pantalla, d
@@ -120,7 +117,6 @@ def suma(datoIngreso, pantalla, END):
 
 
 # FUNCIÓN RESTAR:
-    
 def resta(datoIngreso, pantalla, END):
 
     global operacion, resultado, reset_pantalla, d
@@ -180,6 +176,7 @@ def resta(datoIngreso, pantalla, END):
     # print(reset_pantalla)
 
 
+#FUNCIÓN SUB TOTAL (O IGUAL):
 def subTotal(datoIngreso, pantalla, END):
 
     global operacion, resultado, reset_pantalla, d
@@ -240,6 +237,7 @@ def subTotal(datoIngreso, pantalla, END):
     # print(reset_pantalla)
 
 
+#FUNCIÓN BORRAR ÚLTIMO DÍGITO:
 def borrar_ultimo(datoIngreso, pantalla, END):
 
     global operacion, resultado, reset_pantalla, d
