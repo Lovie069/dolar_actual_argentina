@@ -231,7 +231,9 @@ url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
 # https://mercados.ambito.com//dolarfuturo/variacion
 
 '''URL DE LAS COTIZACIONES HISTORICAS DE DOLAR OFICIAL EN ARGENTINA (ÚLTIMO MES)'''
-url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/2024-10-09/2024-11-09"
+# url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/2024-10-09/2024-11-09"
+url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/"
+# 2024-10-09/2024-11-09
 
 '''PERMISOS DE LA PÁGINA WEB AMBITO'''
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'}
@@ -248,7 +250,6 @@ datoIngreso1 = StringVar()
 datoIngreso2 = StringVar()
 datoIngreso3 = StringVar()
 datoIngreso4 = StringVar()
-
 
 texto_fecha = StringVar()
 texto_compra = StringVar()
@@ -267,6 +268,10 @@ valor_fecha = ""
 valor_compra = 0
 valor_venta = 0
 valor_variacion = ""
+
+'''PANTALLA 3'''
+datoIngreso5 = StringVar()
+datoIngreso6 =StringVar()
 
 
 '''EFECTO PARPADEANTE AL ACTUALIZAR LOS VALORES DE LA PÁGINA DE ÁMBITO'''
@@ -333,8 +338,14 @@ def extraccionDatosDolarOficial(url,usuario):
 def extraccionDatosDolarOficialHistorico(url,usuario):
     global table
 
+# url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/"
+# 2024-10-09/2024-11-09
+
+    url_requerido = url + datoIngreso5.get() + "/" + datoIngreso6.get()
+
+
     '''EXTRACCIÓN DE LA INFORMACIÓN DE LA PÁGINA WEB'''
-    response = requests.get(url, headers=usuario)
+    response = requests.get(url_requerido, headers=usuario)
     valor = response.json()
     # print(response.json())
     # print(response.status_code)
@@ -377,6 +388,11 @@ def limpiarCalculos2():
 
     resultado = 0
 
+def limpiarCalculos3():
+    datoIngreso5.set("")
+    datoIngreso6.set("")
+    table.delete("1.0", "end")
+    
 
 def validation0(digito):
     lista = ["+","-","*","/"]
@@ -500,6 +516,12 @@ botonLimpiar2.grid(row=fila7, column=1,padx=x2) #sticky=u1
 Label(verificacionValores,textvariable=comentario, fg=colorComentario,font=letraSubtitulos, relief=bordeSubtitulo,borderwidth=b1, height = 1).grid(column=0, row=fila6, sticky=u1, columnspan=2, padx=x2,pady=y2)
 
 
+# def on_entry_click(event):
+#     """function that gets called whenever entry is clicked"""
+#     if entryFechaInicial.get() == 'aaaa-mm-dd':
+#        entryFechaInicial.delete(0, "end") # delete all the text in the entry
+#        entryFechaInicial.insert(0, '') #Insert blank for user input
+
 
 
 '''VENTANA DOLAR HISTÓRICO'''
@@ -507,9 +529,29 @@ Label(verificacionValores,textvariable=comentario, fg=colorComentario,font=letra
 Label(dolarHistorico,text="DOLAR HISTÓRICO", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).place(x=15, y=0,width=437, height=28)
 
 #********* PANTALLA = FILA 2 ***************************************
+'''MOSTRAR UN VALOR GRIS TEMPORAL POR DEFECTO EN EL ENTRY
+https://stackoverflow.com/questions/30491721/how-to-insert-a-temporary-text-in-a-tkinter-entry-widget/39677021#39677021'''
+entryFechaInicial = Entry(dolarHistorico, textvariable=datoIngreso5, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso)
+# entryFechaInicial.insert(END, '2024-10-19')
+entryFechaInicial.insert(0, 'AAAA-MM-DD')
+entryFechaInicial.bind("<FocusIn>", lambda event: entryFechaInicial.delete(0,"end") if datoIngreso5.get() == "AAAA-MM-DD" else None)
+entryFechaInicial.bind("<FocusOut>", lambda event: entryFechaInicial.insert(0, "AAAA-MM-DD") if datoIngreso5.get() == "" else None)
+entryFechaInicial.place(x=100, y=33,width=100, height=28)
+# entryFechaInicial.configure(show="aaaa-mm-dd")
+
+entryFechaFinal = Entry(dolarHistorico, textvariable=datoIngreso6, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso)
+entryFechaFinal.insert(0, 'AAAA-MM-DD')
+entryFechaFinal.bind("<FocusIn>", lambda event: entryFechaFinal.delete(0,"end") if datoIngreso6.get() == "AAAA-MM-DD" else None)
+entryFechaFinal.bind("<FocusOut>", lambda event: entryFechaFinal.insert(0, "AAAA-MM-DD") if datoIngreso6.get() == "" else None)
+entryFechaFinal.place(x=230, y=33,width=100, height=28)
+
 botonActualizar=Button(dolarHistorico, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficialHistorico(url_oficial_historico,headers))
 # botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
-botonActualizar.place(x=15, y=33,width=437, height=28)
+botonActualizar.place(x=360, y=33,width=100, height=28)
+
+botonLimpiar3=Button(dolarHistorico, text="LIMPIAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:limpiarCalculos3())
+# botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
+botonLimpiar3.place(x=360, y=80,width=100, height=28)
 
 #********* FILA 3*************************************************
 table = tk.Text(dolarHistorico)
