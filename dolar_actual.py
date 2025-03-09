@@ -85,7 +85,7 @@ def mensajeContacto():
 #Mensaje de versión info:
 def mensajeVersion():
     # messagebox.showinfo("Info. Versión","Versión 1.0 \n \nMes/Año: 09/2024")
-    messagebox.showinfo("Info. Versión","Versión 1.2 \n \nMes/Año: 11/2024")
+    messagebox.showinfo("Info. Versión","Versión 1.3 \n \nMes/Año: 03/2025")
 
 
 '''GENERAMOS CARACTERISTICAS DE LA INTERFAZ QUE SE USARAN EN MULTIPLES PARTES'''
@@ -592,8 +592,8 @@ for n in range(0, 10):
 
 pantalla4.bind("+", lambda _: suma(datoIngreso3, pantalla4, END))
 pantalla4.bind("-", lambda _: resta(datoIngreso3, pantalla4, END))
-pantalla5.bind("+", lambda _: suma(datoIngreso4, pantalla5, END))
-pantalla5.bind("-", lambda _: resta(datoIngreso4, pantalla5, END))
+# pantalla5.bind("+", lambda _: suma(datoIngreso4, pantalla5, END))
+# pantalla5.bind("-", lambda _: resta(datoIngreso4, pantalla5, END))
 
 
 '''Clear (SUPR)'''
@@ -608,7 +608,7 @@ pantalla5.bind("<BackSpace>", lambda _: borrar_ultimo(datoIngreso4, pantalla5, E
 # pantalla4.bind("<KP_Enter>", lambda _: subTotal())
 
 pantalla4.bind("<Return>", lambda _: subTotal(datoIngreso3, pantalla4, END))
-pantalla5.bind("<Return>", lambda _: subTotal(datoIngreso4, pantalla5, END))
+# pantalla5.bind("<Return>", lambda _: subTotal(datoIngreso4, pantalla5, END))
 
 
 
