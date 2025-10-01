@@ -34,7 +34,8 @@ from operaciones_math import *
 '''INCIAMOS LA INTERFAZ DE USUARIO'''
 #CREACIÓN DE VENTANAS:
 raiz=Tk()
-raiz.title("Tipo de Cambio del Dolar Oficial en Argentina")
+# raiz.title("Tipo de Cambio del Dolar Oficial en Argentina")
+raiz.title("Tipo de Cambio del Dolar Banco Nación en Argentina")
 
 #CONFIGURACION DE LA VENTANA RAIZ:
 ancho_ventana = 510
@@ -85,7 +86,8 @@ def mensajeContacto():
 #Mensaje de versión info:
 def mensajeVersion():
     # messagebox.showinfo("Info. Versión","Versión 1.0 \n \nMes/Año: 09/2024")
-    messagebox.showinfo("Info. Versión","Versión 1.3 \n \nMes/Año: 03/2025")
+    # messagebox.showinfo("Info. Versión","Versión 1.3 \n \nMes/Año: 03/2025")
+    messagebox.showinfo("Info. Versión","Versión 1.4 \n \nMes/Año: 10/2025")
 
 
 '''GENERAMOS CARACTERISTICAS DE LA INTERFAZ QUE SE USARAN EN MULTIPLES PARTES'''
@@ -218,8 +220,8 @@ notebook1.add(dolarHistorico, text='Histórico')
 
 
 '''URL DE TODAS LAS COTIZACIONES DE DOLAR EN ARGENTINA'''
-url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
-# url_nacion = "https://mercados.ambito.com//dolarnacion//variacion"
+# url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
+url_nacion = "https://mercados.ambito.com//dolarnacion//variacion"
 # url_informal = "https://mercados.ambito.com//dolar/informal/variacion"
 # https://mercados.ambito.com//euro//variacion
 # https://mercados.ambito.com//dolarturista/variacion
@@ -230,10 +232,20 @@ url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
 # https://mercados.ambito.com//dolar/mayorista/variacion
 # https://mercados.ambito.com//dolarfuturo/variacion
 
-'''URL DE LAS COTIZACIONES HISTORICAS DE DOLAR OFICIAL EN ARGENTINA (ÚLTIMO MES)'''
+'''URL DE LA COTIZACIÓN DE DOLAR  EN ARGENTINA QUE VAMOS A USAR EN ESTA APP'''
+url_dolar = url_nacion
+
+
+'''URL DE LAS COTIZACIONES HISTORICAS DEL DOLAR "ESCOGIDO EN ESTA APP" EN ARGENTINA'''
 # url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/2024-10-09/2024-11-09"
+# url_dolarnacion_historico = https://mercados.ambito.com//dolarnacion/historico-general/2024-10-09/2024-11-09
+# url_mep_historico = "https://mercados.ambito.com//dolar/mep/historico-general/2024-10-09/2024-11-09"
+
 url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/"
-# 2024-10-09/2024-11-09
+url_dolarnacion_historico = "https://mercados.ambito.com//dolarnacion/historico-general/"
+url_mep_historico = "https://mercados.ambito.com//dolar/mep/historico-general/"
+
+url_dolar_historico = url_dolarnacion_historico
 
 '''PERMISOS DE LA PÁGINA WEB AMBITO'''
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'}
@@ -335,7 +347,7 @@ def extraccionDatosDolarOficial(url,usuario):
 # print(f'Debes cobrar: '+str(valor_en_usd)+f' $')
 
 
-def extraccionDatosDolarOficialHistorico(url,usuario):
+def extraccionDatosDolarHistorico(url,usuario):
     global table
 
 # url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/"
@@ -354,7 +366,7 @@ def extraccionDatosDolarOficialHistorico(url,usuario):
     table.delete("1.0", "end")
     table.insert(tk.INSERT, df.to_string())
     
-    print(df.to_string())
+    # print(df.to_string())
 
     return df
 
@@ -434,11 +446,11 @@ alto2=2
 
 '''VENTANA TIPO DE CAMBIO'''
 #********* BOTÓN = FILA 1 ***************************************
-Label(tipoCambio,text="DOLAR OFICIAL", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=4)
+Label(tipoCambio,text="DOLAR BANCO NACIÓN", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=4)
 
 
 #********* PANTALLA = FILA 2 ***************************************
-botonActualizar=Button(tipoCambio, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficial(url_oficial,headers))
+botonActualizar=Button(tipoCambio, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficial(url_dolar,headers))
 botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
 
 #********* TEXTOS = FILA 3 ***************************************
@@ -545,7 +557,7 @@ entryFechaFinal.bind("<FocusIn>", lambda event: entryFechaFinal.delete(0,"end") 
 entryFechaFinal.bind("<FocusOut>", lambda event: entryFechaFinal.insert(0, "AAAA-MM-DD") if datoIngreso6.get() == "" else None)
 entryFechaFinal.place(x=230, y=33,width=100, height=28)
 
-botonActualizar=Button(dolarHistorico, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficialHistorico(url_oficial_historico,headers))
+botonActualizar=Button(dolarHistorico, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarHistorico(url_dolar_historico,headers))
 # botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
 botonActualizar.place(x=360, y=33,width=100, height=28)
 
