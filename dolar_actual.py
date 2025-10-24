@@ -35,7 +35,7 @@ from operaciones_math import *
 #CREACIÓN DE VENTANAS:
 raiz=Tk()
 # raiz.title("Tipo de Cambio del Dolar Oficial en Argentina")
-raiz.title("Tipo de Cambio del Dolar Banco Nación en Argentina")
+raiz.title("Tipo de Cambio del Dolar en Argentina")
 
 #CONFIGURACION DE LA VENTANA RAIZ:
 ancho_ventana = 510
@@ -220,20 +220,52 @@ notebook1.add(dolarHistorico, text='Histórico')
 
 
 '''URL DE TODAS LAS COTIZACIONES DE DOLAR EN ARGENTINA'''
-# url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
+url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
 url_nacion = "https://mercados.ambito.com//dolarnacion//variacion"
-# url_informal = "https://mercados.ambito.com//dolar/informal/variacion"
-# https://mercados.ambito.com//euro//variacion
-# https://mercados.ambito.com//dolarturista/variacion
-# https://mercados.ambito.com//dolarcripto/variacion
-# https://mercados.ambito.com//dolarrava/cl/variacion
-# https://mercados.ambito.com//dolarrava/mep/variacion
-# https://mercados.ambito.com//euro/informal/variacion
-# https://mercados.ambito.com//dolar/mayorista/variacion
-# https://mercados.ambito.com//dolarfuturo/variacion
+url_informal = "https://mercados.ambito.com//dolar/informal/variacion"
+url_dolar_turista = "https://mercados.ambito.com//dolarturista/variacion"
+url_dolar_cripto = "https://mercados.ambito.com//dolarcripto/variacion"
+url_dolar_mayorista = "https://mercados.ambito.com//dolar/mayorista/variacion"
+url_dolar_rava_ccl = "https://mercados.ambito.com//dolarrava/cl/variacion"
+url_dolar_rava_mep = "https://mercados.ambito.com//dolarrava/mep/variacion"
+# url_dolar_futuro = "https://mercados.ambito.com//dolarfuturo/variacion"
+# url_euro = "https://mercados.ambito.com//euro//variacion"
+# url_euro_informal = "https://mercados.ambito.com//euro/informal/variacion"
 
 '''URL DE LA COTIZACIÓN DE DOLAR  EN ARGENTINA QUE VAMOS A USAR EN ESTA APP'''
-url_dolar = url_nacion
+
+# Lista de opciones de cotizaciones y nombres legibles
+opciones_dolar = [
+    ("Dólar Oficial", url_oficial),
+    ("Dólar Nación", url_nacion),
+    ("Dólar Blue/Informal", url_informal),
+    ("Dólar Mayorista", url_dolar_mayorista),
+    ("Dólar Turista", url_dolar_turista),
+    ("Dólar Mep", url_dolar_rava_mep),
+    ("Dólar CCL", url_dolar_rava_ccl),
+    ("Dólar Cripto", url_dolar_cripto),
+]
+
+opcion_dolar_var = StringVar()
+opcion_dolar_var.set("Dólar Nación")  # Valor por defecto en el desplegable
+
+# Map para obtener la URL en base al nombre mostrado
+mapa_opciones_dolar = {nombre: url for nombre, url in opciones_dolar}
+url_dolar = mapa_opciones_dolar[opcion_dolar_var.get()]
+
+def actualizar_url_dolar(*args):
+    global url_dolar
+    url_dolar = mapa_opciones_dolar[opcion_dolar_var.get()]
+
+opcion_dolar_var.trace_add('write', actualizar_url_dolar)
+
+# Crea la lista desplegable en la pestaña TipoCambio
+# from tkinter import ttk
+opciones_nombres = [nombre for nombre, _ in opciones_dolar]
+lista_dolar = ttk.Combobox(tipoCambio, textvariable=opcion_dolar_var, values=opciones_nombres, state="readonly")
+# lista_dolar.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+
 
 
 '''URL DE LAS COTIZACIONES HISTORICAS DEL DOLAR "ESCOGIDO EN ESTA APP" EN ARGENTINA'''
@@ -245,7 +277,50 @@ url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-ge
 url_dolarnacion_historico = "https://mercados.ambito.com//dolarnacion/historico-general/"
 url_mep_historico = "https://mercados.ambito.com//dolar/mep/historico-general/"
 
-url_dolar_historico = url_dolarnacion_historico
+url_informal_historico = "https://mercados.ambito.com//dolar/informal/historico-general/"
+url_dolarturista_historico = "https://mercados.ambito.com//dolar/dolarturista/historico-general/"
+url_dolar_cripto_historico = "https://mercados.ambito.com//dolar/dolarcripto/historico-general/"
+url_dolar_mayorista_historico = "https://mercados.ambito.com//dolar/mayorista/historico-general/"
+url_dolar_rava_ccl_historico = "https://mercados.ambito.com//dolarrava/cl/historico-general/"
+url_dolar_rava_mep_historico = "https://mercados.ambito.com//dolarrava/mep/historico-general/"
+
+
+
+
+# Crear lista de opciones para la selección de dólar histórico
+opciones_dolar_historico = [
+    ("Dólar Oficial", url_oficial_historico),
+    ("Dólar Nación", url_dolarnacion_historico),
+    ("Dólar Blue/Informal", url_informal_historico),
+    ("Dólar Turista", url_dolarturista_historico),
+    ("Dólar Mayorista", url_dolar_mayorista_historico),
+    ("Dólar Mep", url_mep_historico),
+    ("Dólar CCL", url_dolar_rava_ccl_historico),
+    ("Dólar Cripto", url_dolar_cripto_historico),
+]
+
+opcion_dolar_historico_var = StringVar()
+opcion_dolar_historico_var.set("Dólar Nación")  # Valor por defecto
+
+# Map para obtener la URL en base al nombre mostrado
+mapa_opciones_dolar_historico = {nombre: url for nombre, url in opciones_dolar_historico}
+url_dolar_historico = mapa_opciones_dolar_historico[opcion_dolar_historico_var.get()]
+
+def actualizar_url_dolar_historico(*args):
+    global url_dolar_historico
+    url_dolar_historico = mapa_opciones_dolar_historico[opcion_dolar_historico_var.get()]
+
+opcion_dolar_historico_var.trace_add('write', actualizar_url_dolar_historico)
+
+# Crea la lista desplegable en la pestaña dolarHistorico
+opciones_historico_nombres = [nombre for nombre, _ in opciones_dolar_historico]
+lista_dolar_historico = ttk.Combobox(dolarHistorico, textvariable=opcion_dolar_historico_var, values=opciones_historico_nombres, state="readonly")
+# lista_dolar_historico.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+
+
+
+
 
 '''PERMISOS DE LA PÁGINA WEB AMBITO'''
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'}
@@ -446,7 +521,10 @@ alto2=2
 
 '''VENTANA TIPO DE CAMBIO'''
 #********* BOTÓN = FILA 1 ***************************************
-Label(tipoCambio,text="DOLAR BANCO NACIÓN", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=4)
+# Label(tipoCambio,text="DOLAR BANCO NACIÓN", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=4)
+# .grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=4)
+lista_dolar.grid(row=fila1, column=0, padx=x1, pady=y1, sticky="nsew", columnspan=4)
+lista_dolar.configure(justify='center')
 
 
 #********* PANTALLA = FILA 2 ***************************************
@@ -538,7 +616,13 @@ Label(verificacionValores,textvariable=comentario, fg=colorComentario,font=letra
 
 '''VENTANA DOLAR HISTÓRICO'''
 #********* BOTÓN = FILA 1 ***************************************
-Label(dolarHistorico,text="DOLAR HISTÓRICO", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).place(x=15, y=0,width=437, height=28)
+# Label(dolarHistorico,text="DOLAR HISTÓRICO", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).place(x=15, y=0,width=437, height=28)
+
+
+# lista_dolar_historico.grid(row=fila1, column=0, padx=x1, pady=y1, sticky="nsew", columnspan=4)
+lista_dolar_historico.place(x=15, y=0,width=437, height=20)
+# lista_dolar.grid(row=fila1, column=0, padx=x1, pady=y1, sticky="nsew", columnspan=4)
+lista_dolar_historico.configure(justify='center')
 
 #********* PANTALLA = FILA 2 ***************************************
 '''MOSTRAR UN VALOR GRIS TEMPORAL POR DEFECTO EN EL ENTRY
