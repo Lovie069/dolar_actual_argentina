@@ -24,6 +24,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 # import os
+from datetime import datetime
 from funciones_TC  import *
 
 
@@ -87,7 +88,8 @@ def mensajeContacto():
 def mensajeVersion():
     # messagebox.showinfo("Info. Versión","Versión 1.0 \n \nMes/Año: 09/2024")
     # messagebox.showinfo("Info. Versión","Versión 1.3 \n \nMes/Año: 03/2025")
-    messagebox.showinfo("Info. Versión","Versión 1.4 \n \nMes/Año: 10/2025")
+    # messagebox.showinfo("Info. Versión","Versión 1.4 \n \nMes/Año: 10/2025")
+    messagebox.showinfo("Info. Versión","Versión 1.5 \n \nMes/Año: 10/2025")
 
 
 '''GENERAMOS CARACTERISTICAS DE LA INTERFAZ QUE SE USARAN EN MULTIPLES PARTES'''
@@ -495,6 +497,166 @@ def validation(digito):
     return not digito in lista
     
 
+'''FUNCIÓN PARA MOSTRAR CALENDARIO'''
+def mostrar_calendario(entry_widget):
+    """Función para mostrar un calendario y seleccionar una fecha"""
+    
+    # Crear ventana del calendario
+    calendario_window = tk.Toplevel(raiz)
+    calendario_window.title("Seleccionar Fecha")
+    calendario_window.geometry("300x300")
+    calendario_window.resizable(0, 0)
+    calendario_window.config(bg=colorRaiz)
+    
+    # Centrar la ventana en la pantalla principal
+    calendario_window.transient(raiz)
+    calendario_window.grab_set()
+    
+    # Obtener posición de la ventana principal
+    raiz.update_idletasks()
+    x_main = raiz.winfo_x()
+    y_main = raiz.winfo_y()
+    width_main = raiz.winfo_width()
+    height_main = raiz.winfo_height()
+    
+    # Calcular posición centrada
+    x_centered = x_main + (width_main // 2) - 150  # 150 es la mitad del ancho del calendario
+    y_centered = y_main + (height_main // 2) - 150  # 150 es la mitad del alto del calendario
+    
+    # Posicionar el calendario en el centro de la ventana principal
+    calendario_window.geometry(f"300x300+{x_centered}+{y_centered}")
+    
+    # Obtener fecha actual
+    fecha_actual = datetime.now()
+    año_actual = fecha_actual.year
+    mes_actual = fecha_actual.month
+    
+    # Variables para el calendario
+    año_var = tk.StringVar(value=año_actual)
+    mes_var = tk.StringVar(value=mes_actual)
+    dia_var = tk.StringVar()
+    
+    # Frame para controles
+    frame_controles = tk.Frame(calendario_window, bg=colorRaiz)
+    frame_controles.pack(pady=10)
+    
+    # Botones para navegar año
+    tk.Button(frame_controles, text="◀◀", font=('Arial', 10, 'bold'),
+              command=lambda: año_var.set(int(año_var.get()) - 1),
+              bg=colorDbgBoton, fg=fuenteBotones, width=3).pack(side=tk.LEFT, padx=2)
+    
+    tk.Label(frame_controles, textvariable=año_var, font=('Arial', 12, 'bold'),
+             bg=colorRaiz, fg=colorGeneral).pack(side=tk.LEFT, padx=10)
+    
+    tk.Button(frame_controles, text="▶▶", font=('Arial', 10, 'bold'),
+              command=lambda: año_var.set(int(año_var.get()) + 1),
+              bg=colorDbgBoton, fg=fuenteBotones, width=3).pack(side=tk.LEFT, padx=2)
+    
+    # Frame para mes
+    frame_mes = tk.Frame(calendario_window, bg=colorRaiz)
+    frame_mes.pack(pady=5)
+    
+    tk.Button(frame_mes, text="◀", font=('Arial', 10, 'bold'),
+              command=lambda: cambiar_mes(-1),
+              bg=colorDbgBoton, fg=fuenteBotones, width=3).pack(side=tk.LEFT, padx=2)
+    
+    tk.Label(frame_mes, textvariable=mes_var, font=('Arial', 12, 'bold'),
+             bg=colorRaiz, fg=colorGeneral).pack(side=tk.LEFT, padx=10)
+    
+    tk.Button(frame_mes, text="▶", font=('Arial', 10, 'bold'),
+              command=lambda: cambiar_mes(1),
+              bg=colorDbgBoton, fg=fuenteBotones, width=3).pack(side=tk.LEFT, padx=2)
+    
+    def cambiar_mes(direccion):
+        mes_actual = int(mes_var.get())
+        año_actual = int(año_var.get())
+        
+        mes_actual += direccion
+        if mes_actual > 12:
+            mes_actual = 1
+            año_actual += 1
+            año_var.set(año_actual)
+        elif mes_actual < 1:
+            mes_actual = 12
+            año_actual -= 1
+            año_var.set(año_actual)
+        
+        mes_var.set(mes_actual)
+        actualizar_calendario()
+    
+    # Frame para el calendario
+    frame_calendario = tk.Frame(calendario_window, bg=colorRaiz)
+    frame_calendario.pack(pady=10)
+    
+    # Labels para días de la semana
+    dias_semana = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+    for i, dia in enumerate(dias_semana):
+        tk.Label(frame_calendario, text=dia, font=('Arial', 9, 'bold'),
+                 bg=colorRaiz, fg=colorGeneral, width=4).grid(row=0, column=i, padx=1, pady=1)
+    
+    def actualizar_calendario():
+        # Limpiar botones existentes
+        for widget in frame_calendario.winfo_children():
+            if isinstance(widget, tk.Button):
+                widget.destroy()
+        
+        # Recrear labels de días de la semana
+        for i, dia in enumerate(dias_semana):
+            tk.Label(frame_calendario, text=dia, font=('Arial', 9, 'bold'),
+                     bg=colorRaiz, fg=colorGeneral, width=4).grid(row=0, column=i, padx=1, pady=1)
+        
+        año = int(año_var.get())
+        mes = int(mes_var.get())
+        
+        # Obtener primer día del mes y número de días
+        primer_dia = datetime(año, mes, 1).weekday()
+        num_dias = (datetime(año, mes + 1, 1) - datetime(año, mes, 1)).days
+        
+        # Ajustar primer día (lunes = 0)
+        primer_dia = (primer_dia + 1) % 7
+        
+        fila = 1
+        columna = 0
+        
+        # Espacios vacíos para el primer día
+        for _ in range(primer_dia):
+            tk.Label(frame_calendario, text="", width=4).grid(row=fila, column=columna, padx=1, pady=1)
+            columna += 1
+        
+        # Botones para cada día del mes
+        for dia in range(1, num_dias + 1):
+            if columna >= 7:
+                columna = 0
+                fila += 1
+            
+            def seleccionar_dia(d=dia):
+                fecha_seleccionada = f"{año:04d}-{mes:02d}-{d:02d}"
+                entry_widget.delete(0, tk.END)
+                entry_widget.insert(0, fecha_seleccionada)
+                calendario_window.destroy()
+            
+            tk.Button(frame_calendario, text=str(dia), font=('Arial', 9),
+                     command=seleccionar_dia, bg='white', fg='black',
+                     width=4, height=1).grid(row=fila, column=columna, padx=1, pady=1)
+            columna += 1
+    
+    # Actualizar calendario inicial
+    actualizar_calendario()
+    
+    # Botones de acción
+    frame_botones = tk.Frame(calendario_window, bg=colorRaiz)
+    frame_botones.pack(pady=5)
+    
+    tk.Button(frame_botones, text="Cancelar", font=('Arial', 10),
+              command=calendario_window.destroy,
+              bg=colorDbgBoton, fg=fuenteBotones, width=10, height=2).pack(side=tk.LEFT, padx=5)
+    
+    tk.Button(frame_botones, text="Hoy", font=('Arial', 10),
+              command=lambda: [entry_widget.delete(0, tk.END), 
+                              entry_widget.insert(0, datetime.now().strftime("%Y-%m-%d")),
+                              calendario_window.destroy()],
+              bg=colorDbgBoton, fg=fuenteBotones, width=10, height=2).pack(side=tk.LEFT, padx=5)
+
 
 ############################################################
 
@@ -632,6 +794,7 @@ entryFechaInicial = Entry(dolarHistorico, textvariable=datoIngreso5, font= letra
 entryFechaInicial.insert(0, 'AAAA-MM-DD')
 entryFechaInicial.bind("<FocusIn>", lambda event: entryFechaInicial.delete(0,"end") if datoIngreso5.get() == "AAAA-MM-DD" else None)
 entryFechaInicial.bind("<FocusOut>", lambda event: entryFechaInicial.insert(0, "AAAA-MM-DD") if datoIngreso5.get() == "" else None)
+entryFechaInicial.bind("<Button-1>", lambda event: mostrar_calendario(entryFechaInicial))
 entryFechaInicial.place(x=100, y=33,width=100, height=28)
 # entryFechaInicial.configure(show="aaaa-mm-dd")
 
@@ -639,6 +802,7 @@ entryFechaFinal = Entry(dolarHistorico, textvariable=datoIngreso6, font= letraIn
 entryFechaFinal.insert(0, 'AAAA-MM-DD')
 entryFechaFinal.bind("<FocusIn>", lambda event: entryFechaFinal.delete(0,"end") if datoIngreso6.get() == "AAAA-MM-DD" else None)
 entryFechaFinal.bind("<FocusOut>", lambda event: entryFechaFinal.insert(0, "AAAA-MM-DD") if datoIngreso6.get() == "" else None)
+entryFechaFinal.bind("<Button-1>", lambda event: mostrar_calendario(entryFechaFinal))
 entryFechaFinal.place(x=230, y=33,width=100, height=28)
 
 botonActualizar=Button(dolarHistorico, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarHistorico(url_dolar_historico,headers))
@@ -650,13 +814,19 @@ botonLimpiar3=Button(dolarHistorico, text="LIMPIAR", fg=fuenteBotones,font=letra
 botonLimpiar3.place(x=360, y=80,width=100, height=28)
 
 #********* FILA 3*************************************************
+
+Label(dolarHistorico,text="Fecha", fg=fuenteTitulo,font=letraTitulo).place(x=100, y=75,width=50, height=20)
+Label(dolarHistorico,text="Compra", fg=fuenteTitulo,font=letraTitulo).place(x=200, y=75,width=50, height=20)
+Label(dolarHistorico,text="Venta", fg=fuenteTitulo,font=letraTitulo).place(x=280, y=75,width=50, height=20)
+
+
 table = tk.Text(dolarHistorico)
 table.config(width=50, height=30)
-table.place(x=100, y=75,width=230, height=130)
+table.place(x=100, y=105,width=230, height=100)
 
 scrollbar = ttk.Scrollbar(dolarHistorico,orient=tk.VERTICAL, command=table.yview)
 table.config(yscrollcommand=scrollbar.set)
-scrollbar.place(x=340, y=75, height=130)
+scrollbar.place(x=340, y=105, height=100)
 
 
 
