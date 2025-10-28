@@ -24,6 +24,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 # import os
+from datetime import datetime
 from funciones_TC  import *
 
 
@@ -34,7 +35,8 @@ from operaciones_math import *
 '''INCIAMOS LA INTERFAZ DE USUARIO'''
 #CREACIÓN DE VENTANAS:
 raiz=Tk()
-raiz.title("Tipo de Cambio del Dolar Oficial en Argentina")
+# raiz.title("Tipo de Cambio del Dolar Oficial en Argentina")
+raiz.title("Tipo de Cambio del Dolar en Argentina")
 
 #CONFIGURACION DE LA VENTANA RAIZ:
 ancho_ventana = 510
@@ -85,7 +87,9 @@ def mensajeContacto():
 #Mensaje de versión info:
 def mensajeVersion():
     # messagebox.showinfo("Info. Versión","Versión 1.0 \n \nMes/Año: 09/2024")
-    messagebox.showinfo("Info. Versión","Versión 1.2 \n \nMes/Año: 11/2024")
+    # messagebox.showinfo("Info. Versión","Versión 1.3 \n \nMes/Año: 03/2025")
+    # messagebox.showinfo("Info. Versión","Versión 1.4 \n \nMes/Año: 10/2025")
+    messagebox.showinfo("Info. Versión","Versión 1.5 \n \nMes/Año: 10/2025")
 
 
 '''GENERAMOS CARACTERISTICAS DE LA INTERFAZ QUE SE USARAN EN MULTIPLES PARTES'''
@@ -219,21 +223,106 @@ notebook1.add(dolarHistorico, text='Histórico')
 
 '''URL DE TODAS LAS COTIZACIONES DE DOLAR EN ARGENTINA'''
 url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
-# url_nacion = "https://mercados.ambito.com//dolarnacion//variacion"
-# url_informal = "https://mercados.ambito.com//dolar/informal/variacion"
-# https://mercados.ambito.com//euro//variacion
-# https://mercados.ambito.com//dolarturista/variacion
-# https://mercados.ambito.com//dolarcripto/variacion
-# https://mercados.ambito.com//dolarrava/cl/variacion
-# https://mercados.ambito.com//dolarrava/mep/variacion
-# https://mercados.ambito.com//euro/informal/variacion
-# https://mercados.ambito.com//dolar/mayorista/variacion
-# https://mercados.ambito.com//dolarfuturo/variacion
+url_nacion = "https://mercados.ambito.com//dolarnacion//variacion"
+url_informal = "https://mercados.ambito.com//dolar/informal/variacion"
+url_dolar_turista = "https://mercados.ambito.com//dolarturista/variacion"
+url_dolar_cripto = "https://mercados.ambito.com//dolarcripto/variacion"
+url_dolar_mayorista = "https://mercados.ambito.com//dolar/mayorista/variacion"
+url_dolar_rava_ccl = "https://mercados.ambito.com//dolarrava/cl/variacion"
+url_dolar_rava_mep = "https://mercados.ambito.com//dolarrava/mep/variacion"
+# url_dolar_futuro = "https://mercados.ambito.com//dolarfuturo/variacion"
+# url_euro = "https://mercados.ambito.com//euro//variacion"
+# url_euro_informal = "https://mercados.ambito.com//euro/informal/variacion"
 
-'''URL DE LAS COTIZACIONES HISTORICAS DE DOLAR OFICIAL EN ARGENTINA (ÚLTIMO MES)'''
+'''URL DE LA COTIZACIÓN DE DOLAR  EN ARGENTINA QUE VAMOS A USAR EN ESTA APP'''
+
+# Lista de opciones de cotizaciones y nombres legibles
+opciones_dolar = [
+    ("Dólar Oficial", url_oficial),
+    ("Dólar Nación", url_nacion),
+    ("Dólar Blue/Informal", url_informal),
+    ("Dólar Mayorista", url_dolar_mayorista),
+    ("Dólar Turista", url_dolar_turista),
+    ("Dólar Mep", url_dolar_rava_mep),
+    ("Dólar CCL", url_dolar_rava_ccl),
+    ("Dólar Cripto", url_dolar_cripto),
+]
+
+opcion_dolar_var = StringVar()
+opcion_dolar_var.set("Dólar Nación")  # Valor por defecto en el desplegable
+
+# Map para obtener la URL en base al nombre mostrado
+mapa_opciones_dolar = {nombre: url for nombre, url in opciones_dolar}
+url_dolar = mapa_opciones_dolar[opcion_dolar_var.get()]
+
+def actualizar_url_dolar(*args):
+    global url_dolar
+    url_dolar = mapa_opciones_dolar[opcion_dolar_var.get()]
+
+opcion_dolar_var.trace_add('write', actualizar_url_dolar)
+
+# Crea la lista desplegable en la pestaña TipoCambio
+# from tkinter import ttk
+opciones_nombres = [nombre for nombre, _ in opciones_dolar]
+lista_dolar = ttk.Combobox(tipoCambio, textvariable=opcion_dolar_var, values=opciones_nombres, state="readonly")
+# lista_dolar.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+
+
+
+'''URL DE LAS COTIZACIONES HISTORICAS DEL DOLAR "ESCOGIDO EN ESTA APP" EN ARGENTINA'''
 # url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/2024-10-09/2024-11-09"
+# url_dolarnacion_historico = https://mercados.ambito.com//dolarnacion/historico-general/2024-10-09/2024-11-09
+# url_mep_historico = "https://mercados.ambito.com//dolar/mep/historico-general/2024-10-09/2024-11-09"
+
 url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/"
-# 2024-10-09/2024-11-09
+url_dolarnacion_historico = "https://mercados.ambito.com//dolarnacion/historico-general/"
+url_mep_historico = "https://mercados.ambito.com//dolar/mep/historico-general/"
+
+url_informal_historico = "https://mercados.ambito.com//dolar/informal/historico-general/"
+url_dolarturista_historico = "https://mercados.ambito.com//dolar/dolarturista/historico-general/"
+url_dolar_cripto_historico = "https://mercados.ambito.com//dolar/dolarcripto/historico-general/"
+url_dolar_mayorista_historico = "https://mercados.ambito.com//dolar/mayorista/historico-general/"
+url_dolar_rava_ccl_historico = "https://mercados.ambito.com//dolarrava/cl/historico-general/"
+url_dolar_rava_mep_historico = "https://mercados.ambito.com//dolarrava/mep/historico-general/"
+
+
+
+
+# Crear lista de opciones para la selección de dólar histórico
+opciones_dolar_historico = [
+    ("Dólar Oficial", url_oficial_historico),
+    ("Dólar Nación", url_dolarnacion_historico),
+    ("Dólar Blue/Informal", url_informal_historico),
+    ("Dólar Turista", url_dolarturista_historico),
+    ("Dólar Mayorista", url_dolar_mayorista_historico),
+    ("Dólar Mep", url_mep_historico),
+    ("Dólar CCL", url_dolar_rava_ccl_historico),
+    ("Dólar Cripto", url_dolar_cripto_historico),
+]
+
+opcion_dolar_historico_var = StringVar()
+opcion_dolar_historico_var.set("Dólar Nación")  # Valor por defecto
+
+# Map para obtener la URL en base al nombre mostrado
+mapa_opciones_dolar_historico = {nombre: url for nombre, url in opciones_dolar_historico}
+url_dolar_historico = mapa_opciones_dolar_historico[opcion_dolar_historico_var.get()]
+
+def actualizar_url_dolar_historico(*args):
+    global url_dolar_historico
+    url_dolar_historico = mapa_opciones_dolar_historico[opcion_dolar_historico_var.get()]
+
+opcion_dolar_historico_var.trace_add('write', actualizar_url_dolar_historico)
+
+# Crea la lista desplegable en la pestaña dolarHistorico
+opciones_historico_nombres = [nombre for nombre, _ in opciones_dolar_historico]
+lista_dolar_historico = ttk.Combobox(dolarHistorico, textvariable=opcion_dolar_historico_var, values=opciones_historico_nombres, state="readonly")
+# lista_dolar_historico.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+
+
+
+
 
 '''PERMISOS DE LA PÁGINA WEB AMBITO'''
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'}
@@ -335,7 +424,7 @@ def extraccionDatosDolarOficial(url,usuario):
 # print(f'Debes cobrar: '+str(valor_en_usd)+f' $')
 
 
-def extraccionDatosDolarOficialHistorico(url,usuario):
+def extraccionDatosDolarHistorico(url,usuario):
     global table
 
 # url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/"
@@ -354,7 +443,7 @@ def extraccionDatosDolarOficialHistorico(url,usuario):
     table.delete("1.0", "end")
     table.insert(tk.INSERT, df.to_string())
     
-    print(df.to_string())
+    # print(df.to_string())
 
     return df
 
@@ -408,6 +497,166 @@ def validation(digito):
     return not digito in lista
     
 
+'''FUNCIÓN PARA MOSTRAR CALENDARIO'''
+def mostrar_calendario(entry_widget):
+    """Función para mostrar un calendario y seleccionar una fecha"""
+    
+    # Crear ventana del calendario
+    calendario_window = tk.Toplevel(raiz)
+    calendario_window.title("Seleccionar Fecha")
+    calendario_window.geometry("300x300")
+    calendario_window.resizable(0, 0)
+    calendario_window.config(bg=colorRaiz)
+    
+    # Centrar la ventana en la pantalla principal
+    calendario_window.transient(raiz)
+    calendario_window.grab_set()
+    
+    # Obtener posición de la ventana principal
+    raiz.update_idletasks()
+    x_main = raiz.winfo_x()
+    y_main = raiz.winfo_y()
+    width_main = raiz.winfo_width()
+    height_main = raiz.winfo_height()
+    
+    # Calcular posición centrada
+    x_centered = x_main + (width_main // 2) - 150  # 150 es la mitad del ancho del calendario
+    y_centered = y_main + (height_main // 2) - 150  # 150 es la mitad del alto del calendario
+    
+    # Posicionar el calendario en el centro de la ventana principal
+    calendario_window.geometry(f"300x300+{x_centered}+{y_centered}")
+    
+    # Obtener fecha actual
+    fecha_actual = datetime.now()
+    año_actual = fecha_actual.year
+    mes_actual = fecha_actual.month
+    
+    # Variables para el calendario
+    año_var = tk.StringVar(value=año_actual)
+    mes_var = tk.StringVar(value=mes_actual)
+    dia_var = tk.StringVar()
+    
+    # Frame para controles
+    frame_controles = tk.Frame(calendario_window, bg=colorRaiz)
+    frame_controles.pack(pady=10)
+    
+    # Botones para navegar año
+    tk.Button(frame_controles, text="◀◀", font=('Arial', 10, 'bold'),
+              command=lambda: año_var.set(int(año_var.get()) - 1),
+              bg=colorDbgBoton, fg=fuenteBotones, width=3).pack(side=tk.LEFT, padx=2)
+    
+    tk.Label(frame_controles, textvariable=año_var, font=('Arial', 12, 'bold'),
+             bg=colorRaiz, fg=colorGeneral).pack(side=tk.LEFT, padx=10)
+    
+    tk.Button(frame_controles, text="▶▶", font=('Arial', 10, 'bold'),
+              command=lambda: año_var.set(int(año_var.get()) + 1),
+              bg=colorDbgBoton, fg=fuenteBotones, width=3).pack(side=tk.LEFT, padx=2)
+    
+    # Frame para mes
+    frame_mes = tk.Frame(calendario_window, bg=colorRaiz)
+    frame_mes.pack(pady=5)
+    
+    tk.Button(frame_mes, text="◀", font=('Arial', 10, 'bold'),
+              command=lambda: cambiar_mes(-1),
+              bg=colorDbgBoton, fg=fuenteBotones, width=3).pack(side=tk.LEFT, padx=2)
+    
+    tk.Label(frame_mes, textvariable=mes_var, font=('Arial', 12, 'bold'),
+             bg=colorRaiz, fg=colorGeneral).pack(side=tk.LEFT, padx=10)
+    
+    tk.Button(frame_mes, text="▶", font=('Arial', 10, 'bold'),
+              command=lambda: cambiar_mes(1),
+              bg=colorDbgBoton, fg=fuenteBotones, width=3).pack(side=tk.LEFT, padx=2)
+    
+    def cambiar_mes(direccion):
+        mes_actual = int(mes_var.get())
+        año_actual = int(año_var.get())
+        
+        mes_actual += direccion
+        if mes_actual > 12:
+            mes_actual = 1
+            año_actual += 1
+            año_var.set(año_actual)
+        elif mes_actual < 1:
+            mes_actual = 12
+            año_actual -= 1
+            año_var.set(año_actual)
+        
+        mes_var.set(mes_actual)
+        actualizar_calendario()
+    
+    # Frame para el calendario
+    frame_calendario = tk.Frame(calendario_window, bg=colorRaiz)
+    frame_calendario.pack(pady=10)
+    
+    # Labels para días de la semana
+    dias_semana = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+    for i, dia in enumerate(dias_semana):
+        tk.Label(frame_calendario, text=dia, font=('Arial', 9, 'bold'),
+                 bg=colorRaiz, fg=colorGeneral, width=4).grid(row=0, column=i, padx=1, pady=1)
+    
+    def actualizar_calendario():
+        # Limpiar botones existentes
+        for widget in frame_calendario.winfo_children():
+            if isinstance(widget, tk.Button):
+                widget.destroy()
+        
+        # Recrear labels de días de la semana
+        for i, dia in enumerate(dias_semana):
+            tk.Label(frame_calendario, text=dia, font=('Arial', 9, 'bold'),
+                     bg=colorRaiz, fg=colorGeneral, width=4).grid(row=0, column=i, padx=1, pady=1)
+        
+        año = int(año_var.get())
+        mes = int(mes_var.get())
+        
+        # Obtener primer día del mes y número de días
+        primer_dia = datetime(año, mes, 1).weekday()
+        num_dias = (datetime(año, mes + 1, 1) - datetime(año, mes, 1)).days
+        
+        # Ajustar primer día (lunes = 0)
+        primer_dia = (primer_dia + 1) % 7
+        
+        fila = 1
+        columna = 0
+        
+        # Espacios vacíos para el primer día
+        for _ in range(primer_dia):
+            tk.Label(frame_calendario, text="", width=4).grid(row=fila, column=columna, padx=1, pady=1)
+            columna += 1
+        
+        # Botones para cada día del mes
+        for dia in range(1, num_dias + 1):
+            if columna >= 7:
+                columna = 0
+                fila += 1
+            
+            def seleccionar_dia(d=dia):
+                fecha_seleccionada = f"{año:04d}-{mes:02d}-{d:02d}"
+                entry_widget.delete(0, tk.END)
+                entry_widget.insert(0, fecha_seleccionada)
+                calendario_window.destroy()
+            
+            tk.Button(frame_calendario, text=str(dia), font=('Arial', 9),
+                     command=seleccionar_dia, bg='white', fg='black',
+                     width=4, height=1).grid(row=fila, column=columna, padx=1, pady=1)
+            columna += 1
+    
+    # Actualizar calendario inicial
+    actualizar_calendario()
+    
+    # Botones de acción
+    frame_botones = tk.Frame(calendario_window, bg=colorRaiz)
+    frame_botones.pack(pady=5)
+    
+    tk.Button(frame_botones, text="Cancelar", font=('Arial', 10),
+              command=calendario_window.destroy,
+              bg=colorDbgBoton, fg=fuenteBotones, width=10, height=2).pack(side=tk.LEFT, padx=5)
+    
+    tk.Button(frame_botones, text="Hoy", font=('Arial', 10),
+              command=lambda: [entry_widget.delete(0, tk.END), 
+                              entry_widget.insert(0, datetime.now().strftime("%Y-%m-%d")),
+                              calendario_window.destroy()],
+              bg=colorDbgBoton, fg=fuenteBotones, width=10, height=2).pack(side=tk.LEFT, padx=5)
+
 
 ############################################################
 
@@ -434,11 +683,14 @@ alto2=2
 
 '''VENTANA TIPO DE CAMBIO'''
 #********* BOTÓN = FILA 1 ***************************************
-Label(tipoCambio,text="DOLAR OFICIAL", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=4)
+# Label(tipoCambio,text="DOLAR BANCO NACIÓN", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=4)
+# .grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=4)
+lista_dolar.grid(row=fila1, column=0, padx=x1, pady=y1, sticky="nsew", columnspan=4)
+lista_dolar.configure(justify='center')
 
 
 #********* PANTALLA = FILA 2 ***************************************
-botonActualizar=Button(tipoCambio, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficial(url_oficial,headers))
+botonActualizar=Button(tipoCambio, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficial(url_dolar,headers))
 botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
 
 #********* TEXTOS = FILA 3 ***************************************
@@ -526,7 +778,13 @@ Label(verificacionValores,textvariable=comentario, fg=colorComentario,font=letra
 
 '''VENTANA DOLAR HISTÓRICO'''
 #********* BOTÓN = FILA 1 ***************************************
-Label(dolarHistorico,text="DOLAR HISTÓRICO", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).place(x=15, y=0,width=437, height=28)
+# Label(dolarHistorico,text="DOLAR HISTÓRICO", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).place(x=15, y=0,width=437, height=28)
+
+
+# lista_dolar_historico.grid(row=fila1, column=0, padx=x1, pady=y1, sticky="nsew", columnspan=4)
+lista_dolar_historico.place(x=15, y=0,width=437, height=20)
+# lista_dolar.grid(row=fila1, column=0, padx=x1, pady=y1, sticky="nsew", columnspan=4)
+lista_dolar_historico.configure(justify='center')
 
 #********* PANTALLA = FILA 2 ***************************************
 '''MOSTRAR UN VALOR GRIS TEMPORAL POR DEFECTO EN EL ENTRY
@@ -536,6 +794,7 @@ entryFechaInicial = Entry(dolarHistorico, textvariable=datoIngreso5, font= letra
 entryFechaInicial.insert(0, 'AAAA-MM-DD')
 entryFechaInicial.bind("<FocusIn>", lambda event: entryFechaInicial.delete(0,"end") if datoIngreso5.get() == "AAAA-MM-DD" else None)
 entryFechaInicial.bind("<FocusOut>", lambda event: entryFechaInicial.insert(0, "AAAA-MM-DD") if datoIngreso5.get() == "" else None)
+entryFechaInicial.bind("<Button-1>", lambda event: mostrar_calendario(entryFechaInicial))
 entryFechaInicial.place(x=100, y=33,width=100, height=28)
 # entryFechaInicial.configure(show="aaaa-mm-dd")
 
@@ -543,9 +802,10 @@ entryFechaFinal = Entry(dolarHistorico, textvariable=datoIngreso6, font= letraIn
 entryFechaFinal.insert(0, 'AAAA-MM-DD')
 entryFechaFinal.bind("<FocusIn>", lambda event: entryFechaFinal.delete(0,"end") if datoIngreso6.get() == "AAAA-MM-DD" else None)
 entryFechaFinal.bind("<FocusOut>", lambda event: entryFechaFinal.insert(0, "AAAA-MM-DD") if datoIngreso6.get() == "" else None)
+entryFechaFinal.bind("<Button-1>", lambda event: mostrar_calendario(entryFechaFinal))
 entryFechaFinal.place(x=230, y=33,width=100, height=28)
 
-botonActualizar=Button(dolarHistorico, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficialHistorico(url_oficial_historico,headers))
+botonActualizar=Button(dolarHistorico, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarHistorico(url_dolar_historico,headers))
 # botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
 botonActualizar.place(x=360, y=33,width=100, height=28)
 
@@ -554,13 +814,19 @@ botonLimpiar3=Button(dolarHistorico, text="LIMPIAR", fg=fuenteBotones,font=letra
 botonLimpiar3.place(x=360, y=80,width=100, height=28)
 
 #********* FILA 3*************************************************
+
+Label(dolarHistorico,text="Fecha", fg=fuenteTitulo,font=letraTitulo).place(x=100, y=75,width=50, height=20)
+Label(dolarHistorico,text="Compra", fg=fuenteTitulo,font=letraTitulo).place(x=200, y=75,width=50, height=20)
+Label(dolarHistorico,text="Venta", fg=fuenteTitulo,font=letraTitulo).place(x=280, y=75,width=50, height=20)
+
+
 table = tk.Text(dolarHistorico)
 table.config(width=50, height=30)
-table.place(x=100, y=75,width=230, height=130)
+table.place(x=100, y=105,width=230, height=100)
 
 scrollbar = ttk.Scrollbar(dolarHistorico,orient=tk.VERTICAL, command=table.yview)
 table.config(yscrollcommand=scrollbar.set)
-scrollbar.place(x=340, y=75, height=130)
+scrollbar.place(x=340, y=105, height=100)
 
 
 
@@ -592,8 +858,8 @@ for n in range(0, 10):
 
 pantalla4.bind("+", lambda _: suma(datoIngreso3, pantalla4, END))
 pantalla4.bind("-", lambda _: resta(datoIngreso3, pantalla4, END))
-pantalla5.bind("+", lambda _: suma(datoIngreso4, pantalla5, END))
-pantalla5.bind("-", lambda _: resta(datoIngreso4, pantalla5, END))
+# pantalla5.bind("+", lambda _: suma(datoIngreso4, pantalla5, END))
+# pantalla5.bind("-", lambda _: resta(datoIngreso4, pantalla5, END))
 
 
 '''Clear (SUPR)'''
@@ -608,7 +874,7 @@ pantalla5.bind("<BackSpace>", lambda _: borrar_ultimo(datoIngreso4, pantalla5, E
 # pantalla4.bind("<KP_Enter>", lambda _: subTotal())
 
 pantalla4.bind("<Return>", lambda _: subTotal(datoIngreso3, pantalla4, END))
-pantalla5.bind("<Return>", lambda _: subTotal(datoIngreso4, pantalla5, END))
+# pantalla5.bind("<Return>", lambda _: subTotal(datoIngreso4, pantalla5, END))
 
 
 
