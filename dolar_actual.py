@@ -1,20 +1,5 @@
-'''Como OBTENER el VALOR del DOLAR BLUE con PYTHON
-https://www.youtube.com/watch?v=dPnZaWYqiIM'''
-
-'''PAGINA PARA CORREGIR EL ERROR DE IMPORTACIÓN DE DATOS DE AMBITO
-https://stackoverflow.com/questions/38489386/how-to-fix-403-forbidden-errors-when-calling-apis-using-python-requests'''
-
-'''Agregar Data Frame en Tkinter
-https://es.stackoverflow.com/questions/340278/como-mostrar-un-dataframe-en-tkinter'''
-
-'''Adding validation to an Entry widget
-https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/entry-validation.html'''
-
-'''Python String Methods
-https://www.w3schools.com/python/python_ref_string.asp'''
-
-
-'''IMPORTACIÓN DE LIBRERIAS'''
+# App Tkinter para consultar y calcular con tipos de cambio del dólar en Argentina (Actual e Histórico) – Versión 1.5 (10/2025)
+ # Importación de librerías
 import requests
 import pandas as pd
 import numpy as np
@@ -23,7 +8,6 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-# import os
 from datetime import datetime
 from funciones_TC  import *
 
@@ -32,13 +16,13 @@ from funciones_TC  import *
 from operaciones_math import *
 
 
-'''INCIAMOS LA INTERFAZ DE USUARIO'''
+# Inicio de la interfaz de usuario (ventana raíz)
 #CREACIÓN DE VENTANAS:
 raiz=Tk()
 # raiz.title("Tipo de Cambio del Dolar Oficial en Argentina")
 raiz.title("Tipo de Cambio del Dolar en Argentina")
 
-#CONFIGURACION DE LA VENTANA RAIZ:
+# Configuración de la ventana raíz
 ancho_ventana = 510
 alto_ventana = 280
 
@@ -55,14 +39,14 @@ raiz.config(bg=colorRaiz,padx=10,pady=10)
 raiz.resizable(0,0)
 
 
-'''VARIABLES GLOBALES'''
+# Variables globales de estado/texto
 comentario=StringVar()
 
-'''VARIABLE PARA EFECTO PARPADEO:'''
+# Parámetro para efecto de parpadeo en la etiqueta de VENTA
 flash_delay = 250  # msec between colour change
 
 
-#CONFIGURACION DEL MENU PRINCIPAL:
+# Menú principal (Acerca de / Información)
 barra_menu=Menu(raiz)
 raiz.config(menu=barra_menu)
 
@@ -80,11 +64,11 @@ menu_Acerca.add_command(label="Contáctanos",command=lambda:mensajeContacto())
 menu_Acerca.add_command(label="Versión",command=lambda:mensajeVersion())
 
 
-#Mensaje de contacto:
+# Muestra datos de contacto
 def mensajeContacto():
     messagebox.showinfo("Contáctanos","Para mayor información favor escribir al siguiente email:\n\nrodriguezcolmenaresl@gmail.com")
 
-#Mensaje de versión info:
+# Muestra la versión actual
 def mensajeVersion():
     # messagebox.showinfo("Info. Versión","Versión 1.0 \n \nMes/Año: 09/2024")
     # messagebox.showinfo("Info. Versión","Versión 1.3 \n \nMes/Año: 03/2025")
@@ -92,8 +76,8 @@ def mensajeVersion():
     messagebox.showinfo("Info. Versión","Versión 1.5 \n \nMes/Año: 10/2025")
 
 
-'''GENERAMOS CARACTERISTICAS DE LA INTERFAZ QUE SE USARAN EN MULTIPLES PARTES'''
-# DIMENSIONES
+# Características visuales reutilizadas (espaciados, colores, fuentes)
+# Dimensiones
 
 #PADDING:
 x1=15 #Padx
@@ -105,46 +89,33 @@ y2=5 #Pady
 x3=x1 #Padx
 y3= (5,1) #Pady
 
-#ANCHO DE GIDGETS EN VENTANA DE ÁREAS:
-h1=80 #Alto de botones
-h2=1 #Alto filas frame áreas y volúmenes
-w1=100 #Ancho botones
-w2=400 #Ancho pantalla de cálculo
-w3=100 #Ancho imágenes
-w4=15 #Ancho label datos
+ 
 
 
-'''BORDES'''
+# Bordes y ancho por defecto
 # TIPOS: raised, sunken, flat, groove, ridge, solid
 bordeTitulo = "flat"
 bordeSubtitulo = "flat"
 
 # ANCHO
 b1 = 1
-b2 = 10
+ 
 
 #ORIENTACION:
 u1="nsew" #Ubicación figuras geométricas
-u2="e"    #Ubicación de Gitgets en frame calculos de áreas y volúmenes
+ 
 
 
-'''BOTONES'''
-# COLORES
-# FONDOS POR DEFECTO:
+# Botones: colores por defecto
 colorDbgBoton = "#E0BFE0"
 
 # FONDOS AL PRESIONAR
 colorAbgBoton = "#E075DF"
 
-# COLOR DE TEXTO POR DEFECTO
-colorDfBoton = "blue"
-
-# COLOR DE TEXTO AL PRESIONAR
-colorAfBoton = "white"
+ 
 
 
-'''LETRAS'''
-#COLORES:
+# Colores y fuentes
 # colorGeneral = '#723b71'
 colorGeneral = '#502A4F'
 colorSeleccion = '#944D93'
@@ -159,7 +130,7 @@ fuenteResultados = colorGeneral
 
 new_colour = colorGeneral
 
-#FUENTES:
+# Fuentes (familia y tamaños)
 # fuenteGeneral = 'Tahoma'
 fuenteGeneral = 'Comic Sans MS'
 '''https://blog.hubspot.es/website/fuentes-html'''
@@ -171,17 +142,17 @@ letraDatos2= (fuenteGeneral, 7, 'bold')
 letraIngresos= (fuenteGeneral, 9)
 letraResultados= (fuenteGeneral, 9)
 
-# FONDOS
+# Fondo de inputs
 fondoIngresos = "white"
 
-#AVISOS:
+# Mensajes de validación para pestaña Verificación
 F1 = "Debes insertar al menos 2 datos"
 F2 = "Faltan 1 campo por llenar"
 F3 = "Operación realizada"
 F4 = "Recuerda limpiar los campos antes de operar"
 
 
-'''CREACION DE VENTANA PRINCIPAL'''
+# Creación de contenedor principal
 # miFrame=Frame(raiz) #width=200, height=300
 # miFrame.pack()
 miFrame=Frame(raiz, relief="solid",borderwidth=0,padx=1,pady=1)
@@ -191,10 +162,7 @@ miFrame.pack()
 
 # recuadro1=ttk.LabelFrame(miFrame,text="Geométricos",padding=(10,5))
 # recuadro1.pack(fill="both",expand=1)
-'''CREACIÓN DE ESTILOS'''
-# s = ttk.Style()
-# # s.theme_use("classic")
-# s.configure("TNotebook", background="blue")
+# Estilos para Notebook/ pestañas
 
 s1 = ttk.Style()
 # s1.theme_use("classic")
@@ -204,10 +172,9 @@ s1 = ttk.Style()
 s1.configure("TNotebook.Tab", foreground=colorGeneral, font=('fuenteGeneral', '8', 'bold'))
 s1.map("TNotebook.Tab", foreground=[("active", colorSeleccion)])
 
-s2 = ttk.Style()
+ 
 
-'''CREACIÓN DE VENTANA TIPO NOTEBOOK'''
-#NOTEBOOK:
+# Notebook con tres pestañas: TC, Verificación, Histórico
 notebook1 = ttk.Notebook(miFrame,padding=10)
 notebook1.grid(column=0,row=0,sticky='nsew')
 
@@ -221,7 +188,7 @@ notebook1.add(dolarHistorico, text='Histórico')
 
 
 
-'''URL DE TODAS LAS COTIZACIONES DE DOLAR EN ARGENTINA'''
+# URLs de cotizaciones del dólar en Argentina (actual)
 url_oficial = "https://mercados.ambito.com//dolar/oficial/variacion"
 url_nacion = "https://mercados.ambito.com//dolarnacion//variacion"
 url_informal = "https://mercados.ambito.com//dolar/informal/variacion"
@@ -234,7 +201,7 @@ url_dolar_rava_mep = "https://mercados.ambito.com//dolarrava/mep/variacion"
 # url_euro = "https://mercados.ambito.com//euro//variacion"
 # url_euro_informal = "https://mercados.ambito.com//euro/informal/variacion"
 
-'''URL DE LA COTIZACIÓN DE DOLAR  EN ARGENTINA QUE VAMOS A USAR EN ESTA APP'''
+# Mapeo entre nombre mostrado y URL
 
 # Lista de opciones de cotizaciones y nombres legibles
 opciones_dolar = [
@@ -270,10 +237,7 @@ lista_dolar = ttk.Combobox(tipoCambio, textvariable=opcion_dolar_var, values=opc
 
 
 
-'''URL DE LAS COTIZACIONES HISTORICAS DEL DOLAR "ESCOGIDO EN ESTA APP" EN ARGENTINA'''
-# url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/2024-10-09/2024-11-09"
-# url_dolarnacion_historico = https://mercados.ambito.com//dolarnacion/historico-general/2024-10-09/2024-11-09
-# url_mep_historico = "https://mercados.ambito.com//dolar/mep/historico-general/2024-10-09/2024-11-09"
+# URLs base para cotizaciones históricas del dólar
 
 url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/"
 url_dolarnacion_historico = "https://mercados.ambito.com//dolarnacion/historico-general/"
@@ -324,13 +288,12 @@ lista_dolar_historico = ttk.Combobox(dolarHistorico, textvariable=opcion_dolar_h
 
 
 
-'''PERMISOS DE LA PÁGINA WEB AMBITO'''
+# Encabezado User-Agent para evitar bloqueos (Ambito)
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'}
 
 
 
-'''DECLARACIÓN DE VARIABLES'''
-df = pd.DataFrame()
+# Declaración de variables y StringVar para binding en UI
 
 '''PANTALLA 1'''
 datoIngreso1 = StringVar()
@@ -347,11 +310,7 @@ texto_variacion = StringVar()
 
 texto_resultado1 = StringVar()
 
-texto_resultado2 = StringVar()
-texto_resultado3 = StringVar()
-texto_resultado4 = StringVar()
-
-texto_resultado5 = StringVar()
+ 
 
 valor_fecha = ""
 valor_compra = 0
@@ -363,7 +322,7 @@ datoIngreso5 = StringVar()
 datoIngreso6 =StringVar()
 
 
-'''EFECTO PARPADEANTE AL ACTUALIZAR LOS VALORES DE LA PÁGINA DE ÁMBITO'''
+# Efecto visual: parpadeo en el valor de VENTA cuando se actualiza
 def color_label():
     global colorGeneral, colorSeleccion, colorComentario, new_colour, letraDatos
 
@@ -383,6 +342,7 @@ def color_label():
 
 
 def extraccionDatosDolarOficial(url,usuario):
+    # Obtiene datos actuales (compra, venta, variación, fecha) y actualiza la UI
     global valor_venta, valor_compra, valor_fecha, valor_variacion
 
     '''EXTRACCIÓN DE LA INFORMACIÓN DE LA PÁGINA WEB'''
@@ -412,23 +372,12 @@ def extraccionDatosDolarOficial(url,usuario):
         
 
 
-'''VERIFICAMOS SI LOS VALORES COICIDEN CON EL .json de la PÁGINA WEB'''
-# print(f'Valor de compra: '+str(valor_compra))
-# print(f'Valor de venta: '+str(valor_venta))
-# print(f'% de variación: '+valor_variacion)
-# print(f'Última actualización: '+valor_fecha)
-
-'''VERIFICAMOS SI EL TIPO DE DATOS OBTENIDO SE PUEDE TRATAR COMO NÚMERO'''
-# monto_en_pesos = input("Ingrese el valor en USD:")
-# valor_en_usd = valor_venta * float(monto_en_pesos)
-# print(f'Debes cobrar: '+str(valor_en_usd)+f' $')
+ 
 
 
 def extraccionDatosDolarHistorico(url,usuario):
+    # Descarga datos históricos entre dos fechas y los muestra en un Text como tabla
     global table
-
-# url_oficial_historico = "https://mercados.ambito.com//dolar/oficial/historico-general/"
-# 2024-10-09/2024-11-09
 
     url_requerido = url + datoIngreso5.get() + "/" + datoIngreso6.get()
 
@@ -449,6 +398,7 @@ def extraccionDatosDolarHistorico(url,usuario):
 
 
 def calcularPesosARS(precioVenta,montoEnUSD):
+    # Calcula pesos ARS = precioVenta * montoEnUSD y lo muestra formateado
     global valor_venta, valor_compra, valor_fecha, valor_variacion
 
     if montoEnUSD == "":
@@ -460,36 +410,35 @@ def calcularPesosARS(precioVenta,montoEnUSD):
     
 
 def limpiarCalculos():
+    # Limpia campos de la pestaña TC
     datoIngreso1.set("")
     texto_resultado1.set("")
 
 def limpiarCalculos2():
-    global resultado
-
+    # Limpia campos y mensajes en pestaña Verificación
     datoIngreso2.set("")
     datoIngreso3.set("")
     datoIngreso4.set("")
 
-    texto_resultado2.set("")
-    texto_resultado3.set("")
-    texto_resultado4.set("")
     comentario.set("")
-
-    resultado = 0
+ 
 
 def limpiarCalculos3():
+    # Limpia fechas y tabla en pestaña Histórico
     datoIngreso5.set("")
     datoIngreso6.set("")
     table.delete("1.0", "end")
     
 
 def validation0(digito):
+    # Valida que no se ingresen operadores en campos numéricos
     lista = ["+","-","*","/"]
     
     return not digito in lista
 
 
 def validation(digito):
+    # Valida que solo se ingresen dígitos/operadores permitidos
     lista = ["+","-","*","/"]
     for n in range(0, 10):
         lista.append(str(n))
@@ -497,9 +446,8 @@ def validation(digito):
     return not digito in lista
     
 
-'''FUNCIÓN PARA MOSTRAR CALENDARIO'''
+# Función para mostrar un calendario y seleccionar una fecha (YYYY-MM-DD)
 def mostrar_calendario(entry_widget):
-    """Función para mostrar un calendario y seleccionar una fecha"""
     
     # Crear ventana del calendario
     calendario_window = tk.Toplevel(raiz)
@@ -683,14 +631,12 @@ alto2=2
 
 '''VENTANA TIPO DE CAMBIO'''
 #********* BOTÓN = FILA 1 ***************************************
-# Label(tipoCambio,text="DOLAR BANCO NACIÓN", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=4)
-# .grid(column=0,row=fila1,sticky=u1, padx=x1,pady=y1, columnspan=4)
 lista_dolar.grid(row=fila1, column=0, padx=x1, pady=y1, sticky="nsew", columnspan=4)
 lista_dolar.configure(justify='center')
 
 
 #********* PANTALLA = FILA 2 ***************************************
-botonActualizar=Button(tipoCambio, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficial(url_dolar,headers))
+botonActualizar=Button(tipoCambio, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarOficial(url_dolar,headers))
 botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
 
 #********* TEXTOS = FILA 3 ***************************************
@@ -701,7 +647,6 @@ Label(tipoCambio,text="FECHA (Últ. Act.)", fg=fuenteSubtitulo,font=letraSubtitu
 
 
 #********* FILA 4 *************************************************
-# background = flash_colours[0]
 Label(tipoCambio,textvariable=texto_compra, fg=fuenteDatos,font=letraDatos).grid(column=0,row=fila4,sticky=u1,padx=x1,pady=y1)
 
 Label_venta=Label(tipoCambio,textvariable=texto_venta, foreground=new_colour,font=letraDatos)
@@ -724,10 +669,10 @@ pantalla2.grid(column=2, row=fila6, sticky=u1, columnspan=2, padx=x2,pady=y2)
 
 
 #********* FILA 7 *************************************************
-botonCalcular=Button(tipoCambio, text="CALCULAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho2, height=alto1, command=lambda:calcularPesosARS(valor_venta,datoIngreso1.get()))
+botonCalcular=Button(tipoCambio, text="CALCULAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, width=ancho2, height=alto1, command=lambda:calcularPesosARS(valor_venta,datoIngreso1.get()))
 botonCalcular.grid(row=fila7, column=0, columnspan=2,padx=x2,pady=y2) #,sticky=u1
 
-botonLimpiar=Button(tipoCambio, text="LIMPIAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho2, height=alto1, command=lambda:limpiarCalculos())
+botonLimpiar=Button(tipoCambio, text="LIMPIAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, width=ancho2, height=alto1, command=lambda:limpiarCalculos())
 botonLimpiar.grid(row=fila7, column=2, columnspan=2,padx=x2,pady=y2) #,sticky=u1
 
 
@@ -757,10 +702,10 @@ pantalla5.grid(column=1,row=fila5,sticky=u1,padx=x1,pady=y1)
 
 
 #********* FILA 6 *************************************************
-botonCalcular1=Button(verificacionValores, text="CALCULAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho2, height=alto1, command=lambda:funcionCalcular(comentario,F1,F2,F3,F4,datoIngreso2,datoIngreso3,datoIngreso4))
+botonCalcular1=Button(verificacionValores, text="CALCULAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, width=ancho2, height=alto1, command=lambda:funcionCalcular(comentario,F1,F2,F3,F4,datoIngreso2,datoIngreso3,datoIngreso4))
 botonCalcular1.grid(row=fila7, column=0,padx=x2,pady=y2) #sticky=u1
 
-botonLimpiar2=Button(verificacionValores, text="LIMPIAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho2, height=alto1, command=lambda:limpiarCalculos2())
+botonLimpiar2=Button(verificacionValores, text="LIMPIAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, width=ancho2, height=alto1, command=lambda:limpiarCalculos2())
 botonLimpiar2.grid(row=fila7, column=1,padx=x2) #sticky=u1
 
 
@@ -781,22 +726,17 @@ Label(verificacionValores,textvariable=comentario, fg=colorComentario,font=letra
 # Label(dolarHistorico,text="DOLAR HISTÓRICO", fg=fuenteTitulo,font=letraTitulo, relief=bordeTitulo,borderwidth=b1).place(x=15, y=0,width=437, height=28)
 
 
-# lista_dolar_historico.grid(row=fila1, column=0, padx=x1, pady=y1, sticky="nsew", columnspan=4)
 lista_dolar_historico.place(x=15, y=0,width=437, height=20)
-# lista_dolar.grid(row=fila1, column=0, padx=x1, pady=y1, sticky="nsew", columnspan=4)
 lista_dolar_historico.configure(justify='center')
 
 #********* PANTALLA = FILA 2 ***************************************
-'''MOSTRAR UN VALOR GRIS TEMPORAL POR DEFECTO EN EL ENTRY
-https://stackoverflow.com/questions/30491721/how-to-insert-a-temporary-text-in-a-tkinter-entry-widget/39677021#39677021'''
 entryFechaInicial = Entry(dolarHistorico, textvariable=datoIngreso5, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso)
-# entryFechaInicial.insert(END, '2024-10-19')
 entryFechaInicial.insert(0, 'AAAA-MM-DD')
 entryFechaInicial.bind("<FocusIn>", lambda event: entryFechaInicial.delete(0,"end") if datoIngreso5.get() == "AAAA-MM-DD" else None)
 entryFechaInicial.bind("<FocusOut>", lambda event: entryFechaInicial.insert(0, "AAAA-MM-DD") if datoIngreso5.get() == "" else None)
 entryFechaInicial.bind("<Button-1>", lambda event: mostrar_calendario(entryFechaInicial))
 entryFechaInicial.place(x=100, y=33,width=100, height=28)
-# entryFechaInicial.configure(show="aaaa-mm-dd")
+ 
 
 entryFechaFinal = Entry(dolarHistorico, textvariable=datoIngreso6, font= letraIngresos, justify="center", background=fondoIngresos, fg=fuenteIngreso)
 entryFechaFinal.insert(0, 'AAAA-MM-DD')
@@ -805,12 +745,10 @@ entryFechaFinal.bind("<FocusOut>", lambda event: entryFechaFinal.insert(0, "AAAA
 entryFechaFinal.bind("<Button-1>", lambda event: mostrar_calendario(entryFechaFinal))
 entryFechaFinal.place(x=230, y=33,width=100, height=28)
 
-botonActualizar=Button(dolarHistorico, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarHistorico(url_dolar_historico,headers))
-# botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
+botonActualizar=Button(dolarHistorico, text="ACTUALIZAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, width=ancho1, height=alto1, command=lambda:extraccionDatosDolarHistorico(url_dolar_historico,headers))
 botonActualizar.place(x=360, y=33,width=100, height=28)
 
-botonLimpiar3=Button(dolarHistorico, text="LIMPIAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, activeforeground=colorAfBoton, width=ancho1, height=alto1, command=lambda:limpiarCalculos3())
-# botonActualizar.grid( column=0, row=fila2, columnspan=4,sticky=u1,padx=x2,pady=y2)
+botonLimpiar3=Button(dolarHistorico, text="LIMPIAR", fg=fuenteBotones,font=letraBotones, background=colorDbgBoton, activebackground=colorAbgBoton, width=ancho1, height=alto1, command=lambda:limpiarCalculos3())
 botonLimpiar3.place(x=360, y=80,width=100, height=28)
 
 #********* FILA 3*************************************************
@@ -831,30 +769,13 @@ scrollbar.place(x=340, y=105, height=100)
 
 
 '''CÓDIGO PARA INGRESAR DATOS POR TECLADO:'''
-#widget.bind(evento, callback)
-
+ 
 # Numeros
 for n in range(0, 10):
     pantalla4.bind(str(n), lambda event: presionarBoton(event.char,datoIngreso3, pantalla4, END))
     pantalla5.bind(str(n), lambda event: presionarBoton(event.char,datoIngreso4, pantalla5, END))
-    # verificacionValores.bind_all(str(n),lambda e: focus(e))
 
-'''Punto decimal'''
-# pantalla4.bind(".", lambda event: presionarBoton(event.char))
-# pantalla4.bind("<KP_Decimal>", lambda event: presionarBoton(event.char))
-
-'''Operadores'''
-# raiz.bind("*", lambda _: multiplica())
-# raiz.bind("<KP_Multiply>", lambda _:  multiplica())
-
-# raiz.bind("/", lambda _: divide())
-# raiz.bind("<KP_Divide>", lambda _: divide())
-
-# pantalla4.bind("+", lambda _: suma())
-# pantalla4.bind("<KP_Add>", lambda _: suma())
-
-# pantalla4.bind("-", lambda _: resta())
-# pantalla4.bind("<KP_Subtract>", lambda _: resta())
+ 
 
 pantalla4.bind("+", lambda _: suma(datoIngreso3, pantalla4, END))
 pantalla4.bind("-", lambda _: resta(datoIngreso3, pantalla4, END))
@@ -862,19 +783,15 @@ pantalla4.bind("-", lambda _: resta(datoIngreso3, pantalla4, END))
 # pantalla5.bind("-", lambda _: resta(datoIngreso4, pantalla5, END))
 
 
-'''Clear (SUPR)'''
-# raiz.bind("<Delete>", lambda _: borrar_todo())
-
+ 
 # Delete (BackSpace)
 pantalla4.bind("<BackSpace>", lambda _: borrar_ultimo(datoIngreso3, pantalla4, END))
 pantalla5.bind("<BackSpace>", lambda _: borrar_ultimo(datoIngreso4, pantalla5, END))
 
 
-'''= (Return/Intro)'''
-# pantalla4.bind("<KP_Enter>", lambda _: subTotal())
-
+ 
 pantalla4.bind("<Return>", lambda _: subTotal(datoIngreso3, pantalla4, END))
-# pantalla5.bind("<Return>", lambda _: subTotal(datoIngreso4, pantalla5, END))
+ 
 
 
 

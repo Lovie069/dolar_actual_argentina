@@ -1,0 +1,16 @@
+# Dependencias para Dólar Actual - Argentina
+# Aplicación de escritorio para consultar tipos de cambio del dólar
+
+# Librerías principales
+requests>=2.25.0          # Para obtener datos de la API de Ámbito
+pandas>=1.3.0             # Para manejo de datos históricos y DataFrames
+numpy>=1.21.0             # Para operaciones numéricas y arrays
+
+# Dependencias opcionales para desarrollo
+# pyinstaller>=4.0         # Para generar ejecutables (descomentar si necesitas generar .exe)
+# pillow>=8.0.0           # Para manejo de imágenes/iconos (si se necesita en el futuro)
+
+# Notas:
+# - tkinter viene incluido con Python (no requiere instalación)
+# - datetime es parte de la librería estándar de Python
+# - Las versiones mínimas son compatibles con Python 3.7+

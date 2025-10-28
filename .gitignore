@@ -1,8 +1,39 @@
+# Archivos generados por PyInstaller
 /build
 /dist
 /ejecutable
+*.spec
 
-# SOFTWARES DE REFERENCIA
+# Archivos Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos temporales
+*.tmp
+*.temp
+*.log
+
+# SOFTWARES DE REFERENCIA (archivos no relacionados con el proyecto principal)
 Calculadora-04.py
 software_01.py
 funciones_areas.py
@@ -13,4 +44,8 @@ prueba.py
 calendario_prueba.py
 input_temporal.py
 tecladoGet.py
-dolar_actual.spec
+Links de interés.txt
+
+# Carpetas de imágenes/colores (opcional - descomenta si no quieres incluirlas)
+# /colores/
+# /imagenes/
