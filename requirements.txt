@@ -13,4 +13,7 @@ numpy>=1.21.0             # Para operaciones numéricas y arrays
 # Notas:
 # - tkinter viene incluido con Python (no requiere instalación)
 # - datetime es parte de la librería estándar de Python
+# - json, os, sys son parte de la librería estándar de Python
+# - tkinter.colorchooser y tkinter.font son módulos de tkinter
 # - Las versiones mínimas son compatibles con Python 3.7+
+# - La personalización usa tkinter estándar (no requiere dependencias adicionales)

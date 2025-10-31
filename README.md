@@ -12,6 +12,8 @@ Una herramienta completa desarrollada en Python con Tkinter que permite consulta
 - **Consulta histórica** con selección de fechas mediante calendario interactivo
 - **Interfaz intuitiva** con tres pestañas organizadas
 - **Efectos visuales** como parpadeo al actualizar valores
+- **Personalización completa** de colores y fuentes con guardado persistente
+- **Configuración exportable** en formato JSON (compatible con ejecutables .exe)
 
 ## 📋 Requisitos del Sistema
 
@@ -45,9 +47,15 @@ Una herramienta completa desarrollada en Python con Tkinter que permite consulta
 ## 📦 Dependencias
 
 ```
-requests>=2.25.0
-pandas>=1.3.0
-numpy>=1.21.0
+requests>=2.25.0   # Cliente HTTP para API de Ámbito
+pandas>=1.3.0      # Manipulación de datos y DataFrames
+numpy>=1.21.0      # Operaciones numéricas
+
+Librerías incluidas en Python estándar:
+- tkinter          # Interfaz gráfica (incluida en Python)
+- json             # Manejo de archivos de configuración
+- os, sys          # Gestión de rutas y archivos
+- datetime         # Manejo de fechas
 ```
 
 ## 🎯 Uso
@@ -71,18 +79,34 @@ numpy>=1.21.0
 4. **Haz clic en "ACTUALIZAR"** para obtener los datos históricos
 5. Los resultados se muestran en formato de tabla
 
+### Menú "Personalización" - Configurar Aspecto Visual
+1. **Accede al menú "Personalización"** en la barra superior
+2. **Selecciona "Configurar colores y fuentes"**
+3. **Personaliza los colores:**
+   - Color de fondo de la ventana
+   - Color general de texto
+   - Color de selección (pestañas activas)
+   - Color de comentarios
+   - Color de fondo de botones
+   - Color de botones presionados
+4. **Selecciona una fuente** usando el buscador de fuentes
+5. **Haz clic en "Aplicar Cambios"** para guardar
+6. **Usa "Restaurar Defaults"** para volver a la configuración original
+7. Los cambios se guardan automáticamente y persisten entre sesiones
+
 ## 🛠️ Desarrollo
 
 ### Estructura del Proyecto
 ```
 dolar_actual/
-├── dolar_actual.py          # Aplicación principal
-├── funciones_TC.py          # Funciones auxiliares para cálculos
-├── operaciones_math.py      # Operaciones matemáticas
-├── dolar_actual.spec        # Configuración PyInstaller
-├── Icono.ico                # Icono de la aplicación
-├── requirements.txt         # Dependencias
-└── README.md               # Este archivo
+├── dolar_actual.py                   # Aplicación principal
+├── funciones_TC.py                   # Funciones auxiliares para cálculos
+├── operaciones_math.py               # Operaciones matemáticas
+├── dolar_actual.spec                 # Configuración PyInstaller
+├── Icono.ico                         # Icono de la aplicación
+├── requirements.txt                  # Dependencias
+├── config_personalizacion.json      # Configuración personalización (auto-generado)
+└── README.md                        # Este archivo
 ```
 
 ### Generar Ejecutable
@@ -104,18 +128,32 @@ La aplicación obtiene las cotizaciones desde la API de **Mercados Ámbito**:
 
 ## 🔧 Configuración
 
-### Personalización de Colores
-Los colores de la interfaz se pueden modificar en las variables del archivo principal:
+### Personalización de Colores y Fuentes
+La aplicación incluye un sistema completo de personalización a través de la interfaz gráfica:
+
+**Opción 1: Interfaz gráfica (Recomendado)**
+- Usa el menú **"Personalización" → "Configurar colores y fuentes"**
+- Selecciona colores con el selector visual
+- Elige fuentes de la lista disponible con buscador integrado
+- Los cambios se guardan automáticamente en `config_personalizacion.json`
+
+**Opción 2: Manual (para desarrolladores)**
+Los colores también se pueden modificar directamente en el código:
 ```python
-colorGeneral = '#502A4F'      # Color principal
-colorSeleccion = '#944D93'    # Color de selección
+colorGeneral = '#502A4F'      # Color principal de texto
+colorSeleccion = '#944D93'    # Color de selección (pestañas activas)
 colorComentario = '#E075DF'   # Color de comentarios
+colorRaiz = '#E0BFE0'         # Color de fondo de ventana
+colorDbgBoton = "#E0BFE0"     # Color de fondo de botones
+colorAbgBoton = "#E075DF"     # Color de botones al presionar
+
+fuenteGeneral = 'Comic Sans MS'  # Familia de fuente principal
 ```
 
-### Fuentes
-```python
-fuenteGeneral = 'Comic Sans MS'  # Familia de fuente
-```
+**Persistencia de configuración:**
+- La configuración se guarda en `config_personalizacion.json`
+- Compatible con ejecutables .exe (guardado en la carpeta del ejecutable)
+- Se carga automáticamente al iniciar la aplicación
 
 ## 🐛 Solución de Problemas
 
@@ -132,6 +170,17 @@ fuenteGeneral = 'Comic Sans MS'  # Familia de fuente
 - Verifica que tu antivirus no bloquee el archivo
 
 ## 📝 Changelog
+
+### Versión 1.6 (Diciembre 2025)
+- ✅ **Nueva funcionalidad:** Sistema completo de personalización de colores y fuentes
+- ✅ Menú de personalización con interfaz gráfica intuitiva
+- ✅ Selector visual de colores con `colorchooser`
+- ✅ Buscador de fuentes para selección rápida
+- ✅ Persistencia de configuración en JSON
+- ✅ Compatibilidad con ejecutables .exe
+- ✅ Opción "Restaurar Defaults" para resetear configuración
+- ✅ Actualización recursiva de todos los widgets de la interfaz
+- ✅ Tabla histórica con fuente monospace fija para mantener formato
 
 ### Versión 1.5 (Octubre 2025)
 - ✅ Limpieza y optimización del código
