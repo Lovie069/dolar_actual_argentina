@@ -106,13 +106,25 @@ dolar_actual/
 ├── Icono.ico                         # Icono de la aplicación
 ├── requirements.txt                  # Dependencias
 ├── config_personalizacion.json      # Configuración personalización (auto-generado)
-└── README.md                        # Este archivo
+├── README.md                        # Este archivo
+└── GUIA_GENERAR_EXE.md              # Guía para crear ejecutables .exe
 ```
 
 ### Generar Ejecutable
+
+**Método rápido:**
 ```bash
+pip install pyinstaller
 pyinstaller dolar_actual.spec
 ```
+
+El ejecutable se generará en la carpeta `dist/dolar_actual.exe`
+
+**Para instrucciones detalladas**, consulta el archivo [GUIA_GENERAR_EXE.md](GUIA_GENERAR_EXE.md) que incluye:
+- Requisitos previos detallados
+- Opciones de configuración
+- Resolución de problemas comunes
+- Optimización del tamaño del ejecutable
 
 ## 📊 Fuentes de Datos
 
